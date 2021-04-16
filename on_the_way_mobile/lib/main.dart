@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import "./screens/services_screen.dart";
+import 'screens/initial_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,14 +21,17 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         textTheme: TextTheme(
           headline1: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
+            fontWeight: FontWeight.w600,
+            fontSize: 40,
             color: Colors.black87,
           ),
         ),
       ),
-      home: ServicesScreen(),
+      home: InitialScreen(),
       routes: {
+        "/initial": (ctx) => InitialScreen(),
+        "/login": (ctx) => LoginScreen(),
+        "/register": (ctx) => RegisterScreen(),
         "/services": (ctx) => ServicesScreen(),
       },
     );
