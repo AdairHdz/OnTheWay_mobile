@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "../widgets/accent_button.dart";
+import "./home_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   static final String routeName = "/login";
@@ -14,8 +15,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
     if (dataIsValid) {
+      _goToHomeScreen(context);
       _form.currentState.save();
     }
+  }
+
+  void _goToHomeScreen(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }
 
   @override
@@ -89,15 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 TextFormField(
                                   decoration:
                                       InputDecoration(labelText: "Contraseña"),
-                                  onSaved: (value) {
-                                    print(value);
-                                  },
-                                  validator: (value) {
-                                    if (value.trim().length < 8) {
-                                      return "Ingrese una contraseña de mínimo 8 caracteres";
-                                    }
-                                    return null;
-                                  },
                                   obscureText: true,
                                 )
                               ],

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:on_the_way_mobile/screens/tabs_screen.dart';
 import "./screens/services_screen.dart";
 import 'screens/initial_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/price_rate_registration_screen.dart';
 import 'screens/register_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primaryColor: Color.fromRGBO(22, 110, 229, 1),
@@ -33,6 +37,8 @@ class MyApp extends StatelessWidget {
         "/login": (ctx) => LoginScreen(),
         "/register": (ctx) => RegisterScreen(),
         "/services": (ctx) => ServicesScreen(),
+        "/home": (ctx) => TabsScreen(),
+        "/price-rate": (ctx) => PriceRateRegistrationScreen(),
       },
     );
   }
