@@ -14,9 +14,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: AppBar(
-          title: Text("List of services"),
-        ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           foregroundColor: Colors.white,

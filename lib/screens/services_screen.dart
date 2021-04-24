@@ -6,7 +6,7 @@ class ServicesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("List of services"),
+        title: Text("Servicios"),
       ),
       body: ServicesList(),
     );
