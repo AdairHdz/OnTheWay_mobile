@@ -7,6 +7,8 @@ import 'screens/price_rate_registration_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/statistics_screen.dart';
 
+import 'screens/edit_profile_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -40,6 +42,8 @@ class MyApp extends StatelessWidget {
         "/home": (ctx) => TabsScreen(),
         "/price-rate": (ctx) => PriceRateRegistrationScreen(),
         "/statistics": (ctx) => StatisticsScreen(),
+
+        "/edit-profile": (ctx) => EditProfileScreen(),
       },
     );
   }
