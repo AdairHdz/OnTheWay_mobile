@@ -58,13 +58,13 @@ class ServiceItem extends StatelessWidget {
         serviceImage = "assets/images/speed.png";
         break;
       case ServiceStatus.Canceled:
-        serviceImage = "assets/images/verified.png";
+        serviceImage = "assets/images/canceled.png";
         break;
       case ServiceStatus.Concretized:
         serviceImage = "assets/images/verified.png";
         break;
       case ServiceStatus.Pending:
-        serviceImage = "assets/images/verified.png";
+        serviceImage = "assets/images/pending.png";
         break;
     }
     return serviceImage;
