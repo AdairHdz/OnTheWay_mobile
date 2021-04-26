@@ -49,12 +49,15 @@ class AcceptCancelService extends StatelessWidget {
               children: <Widget>[
                 Container(
                     margin: EdgeInsets.all(20),
-                    child: Text(
-                      "Solicitud de servicio",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Solicitud de servicio",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold),
+                      ),
                     )),
                 Container(
                   margin:
@@ -144,47 +147,44 @@ class AcceptCancelService extends StatelessWidget {
                   ),
                 ),
                 Container(
+                  width: double.infinity,
                   margin:
                       EdgeInsets.only(left: 50, top: 20, right: 50, bottom: 20),
                   padding:
                       EdgeInsets.only(left: 50, top: 20, right: 50, bottom: 20),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Visibility(
-                          visible: isVisibleForAccept,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              service['serviceStatus'] = 'Activo';
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.orange,
-                                onPrimary: Colors.black),
-                            child: Text("Aceptar",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                          ),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Visibility(
+                        visible: isVisibleForAccept,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            service['serviceStatus'] = 'Activo';
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.orange, onPrimary: Colors.black),
+                          child: Text("Aceptar",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600)),
                         ),
-                        Visibility(
-                          visible: isVisibleForCancel,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              service['serviceStatus'] = 'Cancelado';
-                            },
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.orange,
-                                onPrimary: Colors.black),
-                            child: Text("Cancelar",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                      Visibility(
+                        visible: isVisibleForCancel,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            service['serviceStatus'] = 'Cancelado';
+                          },
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.orange, onPrimary: Colors.black),
+                          child: Text("Cancelar",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600)),
+                        ),
+                      )
+                    ],
                   ),
-                )
+                ),
               ],
             ),
           ),
