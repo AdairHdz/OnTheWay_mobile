@@ -48,14 +48,15 @@ class AcceptCancelService extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Container(
-                    margin: EdgeInsets.all(20),
+                    margin: EdgeInsets.only(
+                        left: 10, top: 20, right: 10, bottom: 20),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
                         "Solicitud de servicio",
                         style: TextStyle(
                             color: Colors.black,
-                            fontSize: 40,
+                            fontSize: 30,
                             fontWeight: FontWeight.bold),
                       ),
                     )),
@@ -68,7 +69,7 @@ class AcceptCancelService extends StatelessWidget {
                       service['kindOfService'],
                       style: TextStyle(
                           color: Colors.black,
-                          fontSize: 30,
+                          fontSize: 25,
                           fontWeight: FontWeight.normal),
                     ),
                   ),
@@ -83,7 +84,7 @@ class AcceptCancelService extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25),
+                          fontSize: 20),
                     ),
                   ),
                 ),
@@ -97,7 +98,7 @@ class AcceptCancelService extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.normal,
-                          fontSize: 22),
+                          fontSize: 20),
                     ),
                   ),
                 ),
@@ -128,7 +129,7 @@ class AcceptCancelService extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.normal,
-                          fontSize: 22),
+                          fontSize: 20),
                     ),
                   ),
                 ),
@@ -142,14 +143,14 @@ class AcceptCancelService extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.normal,
-                          fontSize: 22),
+                          fontSize: 20),
                     ),
                   ),
                 ),
                 Container(
                   width: double.infinity,
                   margin:
-                      EdgeInsets.only(left: 50, top: 20, right: 50, bottom: 20),
+                      EdgeInsets.only(left: 10, top: 20, right: 10, bottom: 20),
                   padding:
                       EdgeInsets.only(left: 50, top: 20, right: 50, bottom: 20),
                   alignment: Alignment.center,
