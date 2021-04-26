@@ -94,7 +94,7 @@ class _PriceRateRegistrationScreenState
                   SizedBox(height: 30),
                   CustomDropdownButton(
                     hint: "Estado",
-                    options: ["Veracruz"],
+                    options: ["Veracruz", "Puebla"],
                   ),
                   SizedBox(height: 30),
                   CustomDropdownButton(
