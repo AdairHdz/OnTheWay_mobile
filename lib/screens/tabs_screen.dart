@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import './statistics_screen.dart';
 
 import 'home_screen.dart';
 import 'services_screen.dart';
@@ -23,6 +24,14 @@ class _TabsScreenState extends State<TabsScreen> {
       {
         "title": "Services",
         "page": ServicesScreen(),
+      },
+      {
+        "title": "Statistics",
+        "page": StatisticsScreen(),
+      },
+      {
+        "title": "Profile",
+        "page": HomeScreen(),
       }
     ];
     super.initState();
@@ -39,6 +48,7 @@ class _TabsScreenState extends State<TabsScreen> {
     return Scaffold(
       body: _pages[_selectedPageIndex]["page"],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         onTap: _selectPage,
         backgroundColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.white,
@@ -54,9 +64,13 @@ class _TabsScreenState extends State<TabsScreen> {
             label: "Servicios",
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.monetization_on),
+            label: "Estadísticas",
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: "Perfil",
-          )
+          ),
         ],
       ),
     );
