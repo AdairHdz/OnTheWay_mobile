@@ -11,6 +11,7 @@ enum ServiceStatus {
   Concretized,
   Canceled,
   Active,
+  Pending,
 }
 
 class Service {

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "../widgets/accent_button.dart";
 import "./home_screen.dart";
+import "./reset_password_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   static final String routeName = "/login";
@@ -23,6 +24,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _goToHomeScreen(BuildContext context) {
     Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+  }
+
+  void _goToResetPassword(){
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed(ResetPasswordScreen.routeName);
   }
 
   @override
@@ -106,7 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextButton(
                             child: Text("¿Olvidaste tu contraseña?"),
-                            onPressed: () {},
+                            onPressed: () {
+                              _goToResetPassword();
+                            },
                             style: ButtonStyle(
                               foregroundColor:
                                   MaterialStateProperty.all<Color>(Colors.grey),
