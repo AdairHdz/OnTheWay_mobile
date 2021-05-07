@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+//import 'package:on_the_way_mobile/models/service.dart';
 import '../models/Service.dart';
 import 'package:intl/intl.dart';
 
@@ -39,6 +41,9 @@ class ServiceItem extends StatelessWidget {
       case ServiceStatus.Canceled:
         serviceStatusText = "Cancelado";
         break;
+      case ServiceStatus.Pending:
+        serviceStatusText = "Pendiente";
+        break;
       default:
         serviceStatusText = "Indefinido";
     }
@@ -53,10 +58,13 @@ class ServiceItem extends StatelessWidget {
         serviceImage = "assets/images/speed.png";
         break;
       case ServiceStatus.Canceled:
-        serviceImage = "assets/images/verified.png";
+        serviceImage = "assets/images/canceled.png";
         break;
       case ServiceStatus.Concretized:
         serviceImage = "assets/images/verified.png";
+        break;
+      case ServiceStatus.Pending:
+        serviceImage = "assets/images/pending.png";
         break;
     }
     return serviceImage;
@@ -64,34 +72,47 @@ class ServiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).primaryColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Image(
-            image: AssetImage(_serviceImage),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/accept_cancel_service", arguments: {
+          'accepted': service.accepted,
+          'cost': service.cost,
+          'date': service.date,
+          'deliveryAddress': service.deliveryAddress,
+          'description': service.description,
+          'kindOfService': _kindOfService,
+          'serviceStatus': _serviceStatus
+        });
+      },
+      child: Card(
+        color: Theme.of(context).primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: Image(
+              image: AssetImage(_serviceImage),
+            ),
           ),
-        ),
-        title: Text(
-          _kindOfService,
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        subtitle: Text(
-          DateFormat.yMd().add_jm().format(DateTime.now()),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
+          title: Text(
+            _kindOfService,
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           ),
-        ),
-        trailing: Text(
-          _serviceStatus,
-          style: TextStyle(
-              color: Colors.white, fontStyle: FontStyle.italic, fontSize: 12),
+          subtitle: Text(
+            DateFormat.yMd().add_jm().format(DateTime.now()),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          ),
+          trailing: Text(
+            _serviceStatus,
+            style: TextStyle(
+                color: Colors.white, fontStyle: FontStyle.italic, fontSize: 12),
+          ),
         ),
       ),
     );

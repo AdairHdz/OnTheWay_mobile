@@ -3,13 +3,15 @@ import "../models/Service.dart";
 import "./service_item.dart";
 
 class ServicesList extends StatelessWidget {
+  final int selectedService = 0;
   final List<Service> services = [
     Service(
       accepted: true,
       cost: 80.00,
       date: DateTime.now(),
       deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
+      description:
+          "2 cajas de Ibuprofeno, 2 cajas de omeprazon y un cornetto porfa.",
       kindOfService: KindOfService.Delivery,
       serviceStatus: ServiceStatus.Active,
     ),
@@ -29,7 +31,16 @@ class ServicesList extends StatelessWidget {
       deliveryAddress: "Pedro Moreno #21",
       description: "2 cajas de Ibuprofeno",
       kindOfService: KindOfService.DrugsPurchase,
-      serviceStatus: ServiceStatus.Concretized,
+      serviceStatus: ServiceStatus.Pending,
+    ),
+    Service(
+      accepted: true,
+      cost: 80.00,
+      date: DateTime.now(),
+      deliveryAddress: "Pedro Moreno #21",
+      description: "2 cajas de Ibuprofeno",
+      kindOfService: KindOfService.GroceriesPurchase,
+      serviceStatus: ServiceStatus.Pending,
     ),
     Service(
       accepted: true,
@@ -45,16 +56,7 @@ class ServicesList extends StatelessWidget {
       cost: 80.00,
       date: DateTime.now(),
       deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.GroceriesPurchase,
-      serviceStatus: ServiceStatus.Concretized,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
+      description: "Mota",
       kindOfService: KindOfService.Delivery,
       serviceStatus: ServiceStatus.Concretized,
     ),
