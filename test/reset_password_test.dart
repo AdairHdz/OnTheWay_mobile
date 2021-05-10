@@ -39,7 +39,7 @@ void main() {
     print("Button tapped");
     await tester.pump(const Duration(milliseconds: 100));
     expect(userErrorFinder, findsOneWidget);
-    print("Validated email inline error");
+    print("Validated code inline error");
   });
 
 
@@ -57,6 +57,6 @@ void main() {
     print("Button tapped");
     await tester.pump(const Duration(milliseconds: 100));
     expect(userErrorFinder, findsOneWidget);
-    print("Validated email inline error");
+    print("Validated password inline error");
   });
 }
