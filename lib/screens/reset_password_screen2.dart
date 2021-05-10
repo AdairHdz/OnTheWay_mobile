@@ -1,9 +1,11 @@
 import "package:flutter/material.dart";
 import "../widgets/accent_button.dart";
 import "./reset_password_screen3.dart";
+import "../widgets/accent_button.dart";
 
 class ResetPasswordScreen2 extends StatefulWidget {
   static final String routeName = "/reset-password2";
+
   @override
   _ResetPasswordScreenState2 createState() => _ResetPasswordScreenState2();
 }
@@ -13,7 +15,6 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
 
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
-    print(dataIsValid);
     if (dataIsValid) {
       _form.currentState.save();
       _goToResetPassword3();
@@ -25,7 +26,9 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
     Navigator.of(context).pushReplacementNamed(ResetPasswordScreen3.routeName);
   }
 
+  @override
   Widget build(BuildContext context) {
+
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
 
@@ -35,7 +38,6 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          //color: Theme.of(context).primaryColor,
           color: Colors.white,
           height: (deviceHeight + 50),
           child: Stack(
