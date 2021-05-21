@@ -1,12 +1,6 @@
-import 'dart:io';
-
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:on_the_way_mobile/widgets/accent_button.dart';
-import 'package:on_the_way_mobile/widgets/date_picker.dart';
-import 'package:on_the_way_mobile/widgets/simple_line_chart.dart';
-import "package:flutter/material.dart";
 
 class EditProfileScreen extends StatefulWidget {
   static final String routeName = "/edit-profile";
@@ -58,8 +52,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Image _image = Image.network(
-                  "https://images.pexels.com/photos/2611690/pexels-photo-2611690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
-  
+      "https://images.pexels.com/photos/2611690/pexels-photo-2611690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+
   Future<void> _getImage() async {
     final picker = ImagePicker();
 
@@ -74,7 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
-    var list_states = ['Veracruz', 'Oaxaca', 'Puebla'];
+    var listStates = ['Veracruz', 'Oaxaca', 'Puebla'];
     String _view = 'Estado';
 
     return Scaffold(
@@ -88,15 +82,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: (deviceHeight * 0.30),
                 child: _image,
               ),
-              Positioned (
+              Positioned(
                 top: 0,
-                right: deviceWidth/2,
-                child: AccentButton(
-                  _getImage, "Editar foto de perfil"
-                ),
+                right: deviceWidth / 2,
+                child: AccentButton(_getImage, "Editar foto de perfil"),
               ),
-
-              
             ],
           ),
           Container(
@@ -163,7 +153,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: 30,
                     ),
                     DropdownButton(
-                      items: list_states.map((String _state) {
+                      items: listStates.map((String _state) {
                         return DropdownMenuItem(
                           value: _state,
                           child: Text(_state),

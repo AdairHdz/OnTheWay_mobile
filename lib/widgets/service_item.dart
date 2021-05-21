@@ -41,9 +41,9 @@ class ServiceItem extends StatelessWidget {
       case ServiceStatus.Canceled:
         serviceStatusText = "Cancelado";
         break;
-      case ServiceStatus.Pending:
-        serviceStatusText = "Pendiente";
-        break;
+      // case ServiceStatus.
+      //   serviceStatusText = "Pendiente";
+      //   break;
       default:
         serviceStatusText = "Indefinido";
     }
@@ -63,7 +63,7 @@ class ServiceItem extends StatelessWidget {
       case ServiceStatus.Concretized:
         serviceImage = "assets/images/verified.png";
         break;
-      case ServiceStatus.Pending:
+      default:
         serviceImage = "assets/images/pending.png";
         break;
     }

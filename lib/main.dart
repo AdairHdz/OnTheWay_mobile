@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:on_the_way_mobile/models/service.dart';
 import 'package:on_the_way_mobile/screens/tabs_screen.dart';
 import "./screens/services_screen.dart";
 import 'screens/initial_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/price_rate_registration_screen.dart';
 import 'screens/register_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/accept_cancel_service.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/edit_profile_screen.dart';
