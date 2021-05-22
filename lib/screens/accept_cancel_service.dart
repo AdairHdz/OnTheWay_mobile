@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../models/service.dart';
 
 class AcceptCancelService extends StatelessWidget {
   static final String routeName = "/accept_cancel_service";

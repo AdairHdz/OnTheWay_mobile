@@ -31,7 +31,7 @@ class ServicesList extends StatelessWidget {
       deliveryAddress: "Pedro Moreno #21",
       description: "2 cajas de Ibuprofeno",
       kindOfService: KindOfService.DrugsPurchase,
-      serviceStatus: ServiceStatus.Pending,
+      serviceStatus: ServiceStatus.Active,
     ),
     Service(
       accepted: true,
@@ -40,7 +40,7 @@ class ServicesList extends StatelessWidget {
       deliveryAddress: "Pedro Moreno #21",
       description: "2 cajas de Ibuprofeno",
       kindOfService: KindOfService.GroceriesPurchase,
-      serviceStatus: ServiceStatus.Pending,
+      serviceStatus: ServiceStatus.Canceled,
     ),
     Service(
       accepted: true,

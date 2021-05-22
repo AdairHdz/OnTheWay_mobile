@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "../widgets/accent_button.dart";
-import "./reset_password_screen2.dart";
 import "./login_screen.dart";
 
 class ResetPasswordScreen3 extends StatefulWidget {
@@ -124,8 +123,8 @@ class _ResetPasswordScreenState3 extends State<ResetPasswordScreen3> {
                                   obscureText: true,
                                 ),
                                 TextFormField(
-                                  decoration:
-                                      InputDecoration(labelText: "Con firmar contraseña"),
+                                  decoration: InputDecoration(
+                                      labelText: "Con firmar contraseña"),
                                   onSaved: (value) {
                                     print(value);
                                   },
@@ -135,7 +134,7 @@ class _ResetPasswordScreenState3 extends State<ResetPasswordScreen3> {
                                         confirmationPassword.length <= 50 &&
                                         (password == confirmationPassword)) {
                                       return null;
-                                    }else{
+                                    } else {
                                       _showMyDialog(context);
                                     }
                                     return "Contraseña inválida";

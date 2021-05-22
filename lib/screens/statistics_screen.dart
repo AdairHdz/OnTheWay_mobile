@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
 import 'package:on_the_way_mobile/widgets/accent_button.dart';
-import 'package:on_the_way_mobile/widgets/date_picker.dart';
 import 'package:on_the_way_mobile/widgets/simple_line_chart.dart';
 
 class StatisticsScreen extends StatefulWidget {

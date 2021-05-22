@@ -7,12 +7,7 @@ enum KindOfService {
   Otro,
 }
 
-enum ServiceStatus {
-  Concretized,
-  Canceled,
-  Active,
-  Pending,
-}
+enum ServiceStatus { Concretized, Canceled, Active, Pending }
 
 class Service {
   final bool accepted;
