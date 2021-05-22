@@ -13,7 +13,7 @@ class ProfileInfo extends StatelessWidget {
           width: deviceWidth,
           height: (deviceHeight * 0.30),
           child: Image.network(
-            "https://images.pexels.com/photos/2611690/pexels-photo-2611690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+            "http://192.168.1.73:8080/images/82e49b2e-cff5-46cb-8f4f-de932cbb6cbf/OnTheWayIcon.png",
             fit: BoxFit.cover,
           ),
         ),
