@@ -66,6 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
         mySession.verified = loginResponse.verified;
         mySession.userType = loginResponse.userType;
         mySession.token = loginResponse.token;
+        mySession.stateId = loginResponse.stateId;
+        print(loginResponse.stateId);
+        print(mySession.stateId);
         navigateToHomeScreen(context);
       }
     } on TimeoutException catch (_) {

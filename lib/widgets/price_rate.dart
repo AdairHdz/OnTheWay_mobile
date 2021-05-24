@@ -1,7 +1,11 @@
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/data/dataTransferObjects/priceRateDTO/priceRateResponseDTO.dart';
 import "../widgets/price_rate_item.dart";
 
 class PriceRate extends StatelessWidget {
+  final List<PriceRateResponseDTO> priceRates;
+
+  const PriceRate(this.priceRates);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -9,18 +13,18 @@ class PriceRate extends StatelessWidget {
       child: Container(
         child: Column(
           children: [
-            PriceRateItem(
-              day: "Lunes",
-              startingHour: "07:00 AM",
-              endingHour: "03:00 PM",
-              priceRate: 80,
-            ),
-            PriceRateItem(
-              day: "Martes",
-              startingHour: "09:00 AM",
-              endingHour: "06:00 PM",
-              priceRate: 50,
-            ),
+            if (priceRates != null)
+              for (var priceRate in priceRates)
+                PriceRateItem(
+                  cityName: priceRate.city.name,
+                  startingHour: priceRate.startingHour,
+                  endingHour: priceRate.endingHour,
+                  kindOfService: priceRate.kindOfService,
+                  weekdays: priceRate.workingDays,
+                  priceRate: priceRate.price,
+                ),
+            if (priceRates == null)
+              Text("Parece que aún no tienes tarifas agregadas")
           ],
         ),
       ),

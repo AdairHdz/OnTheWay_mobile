@@ -7,7 +7,7 @@ import 'requestable.dart';
 
 class RestRequest implements Requestable {
   //static final String baseURL = "192.168.100.41:8080";
-  static final String baseURL = "192.168.1.73:8080";
+  static final String baseURL = "192.168.100.41:8080";
   @override
   Future<http.Response> getResource(String endpoint) async {
     final response = await http.get(Uri.http(baseURL, endpoint)).timeout(

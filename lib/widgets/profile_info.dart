@@ -3,6 +3,10 @@ import "package:flutter/material.dart";
 import './stars_rating.dart';
 
 class ProfileInfo extends StatelessWidget {
+  final String serviceProviderName;
+  final int averageScore;
+  const ProfileInfo({this.serviceProviderName, this.averageScore});
+
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
@@ -13,7 +17,7 @@ class ProfileInfo extends StatelessWidget {
           width: deviceWidth,
           height: (deviceHeight * 0.30),
           child: Image.network(
-            "http://192.168.1.73:8080/images/82e49b2e-cff5-46cb-8f4f-de932cbb6cbf/OnTheWayIcon.png",
+            "http://192.168.100.41:8080/images/82e49b2e-cff5-46cb-8f4f-de932cbb6cbf/OnTheWayIcon.png",
             fit: BoxFit.cover,
           ),
         ),
@@ -24,18 +28,8 @@ class ProfileInfo extends StatelessWidget {
           padding: EdgeInsets.all(10),
           width: deviceWidth,
           child: Text(
-            "MotoServicio Adonai",
+            serviceProviderName,
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
-            softWrap: false,
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(10),
-          width: deviceWidth,
-          child: Text(
-            "Hiram Adonai Serrano",
-            style: TextStyle(
-                fontSize: 18, color: Color.fromRGBO(180, 180, 180, 1)),
             softWrap: false,
           ),
         ),
@@ -45,7 +39,7 @@ class ProfileInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                child: const StarsRating(4),
+                child: StarsRating(averageScore),
                 onPressed: () {},
               ),
             ],

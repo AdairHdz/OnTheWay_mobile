@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import "package:flutter/material.dart";
 import 'package:on_the_way_mobile/data/dataTransferObjects/registerRequestDTO.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/stateDTO/stateDTO.dart';
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
-import 'package:on_the_way_mobile/widgets/notificationPopup.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
 import "../widgets/accent_button.dart";
 
 class RegisterScreen extends StatefulWidget {
@@ -14,12 +17,13 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _form = GlobalKey<FormState>();
+  List<CustomInput> listOfStates = List.empty(growable: true);
   RegisterRequestDTO _registerRequestDTO = RegisterRequestDTO(
       names: "",
       lastName: "",
       emailAddress: "",
       password: "",
-      stateId: "3d5b56f8-0e6c-495d-b010-196f26d87e48",
+      stateId: "",
       userType: 0);
 
   void _saveForm() {
@@ -30,40 +34,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchStates();
+  }
+
+  Future<void> _fetchStates() async {
+    RestRequest request = RestRequest();
+    try {
+      var response = await request.getResource("/v1/states");
+      if (response.statusCode == 200) {
+        List<StateDTO> listOfStatesDTO = (json.decode(response.body) as List)
+            .map((i) => StateDTO.fromJson(i))
+            .toList();
+        listOfStatesDTO.forEach((stateDTO) {
+          setState(() {
+            CustomInput customInput =
+                CustomInput(child: stateDTO.name, value: stateDTO.id);
+            listOfStates.add(customInput);
+          });
+        });
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
   Future<void> _registerUser() async {
     RestRequest request = RestRequest();
     try {
       var response =
           await request.postResource("/v1/register", _registerRequestDTO);
       if (response.statusCode == 201) {
-        _showNotification(context, "Usuario registrado",
+        showNotification(context, "Usuario registrado",
             "El usuario se ha registrado correctamente", "Aceptar");
       }
     } on TimeoutException catch (_) {
-      _showNotification(
+      showNotification(
           context,
           "Se ha agotado el tiempo de espera",
           "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
           "Aceptar");
     } on NetworkRequestException catch (error) {
-      _showNotification(
+      showNotification(
           context, "Ha ocurrido un error de red", error.cause, "Aceptar");
     }
-  }
-
-  Future<void> _showNotification(BuildContext context, String popupTitle,
-      String popupBody, String popupButtonText) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext _) {
-        return NotificationPopup(
-          title: popupTitle,
-          body: popupBody,
-          buttonText: popupButtonText,
-        );
-      },
-    );
   }
 
   @override
@@ -203,7 +226,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         password.length <= 50) {
                                       return null;
                                     }
-                                    _showNotification(
+                                    showNotification(
                                         context,
                                         "Contaseña insegura",
                                         "Por favor ingrese una contraseña con al menos 8 caracteres",
@@ -211,6 +234,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     return "Contraseña inválida";
                                   },
                                   obscureText: true,
+                                ),
+                                DropdownButtonFormField(
+                                  hint: Text("Estado"),
+                                  items: [
+                                    if (listOfStates != null &&
+                                        listOfStates.isNotEmpty)
+                                      ...listOfStates.map(
+                                        (option) {
+                                          return DropdownMenuItem(
+                                            child: Text(option.child),
+                                            value: option.value,
+                                          );
+                                        },
+                                      )
+                                  ],
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "Seleccione un estado";
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _registerRequestDTO = RegisterRequestDTO(
+                                          names: _registerRequestDTO.names,
+                                          lastName:
+                                              _registerRequestDTO.lastName,
+                                          emailAddress:
+                                              _registerRequestDTO.emailAddress,
+                                          password:
+                                              _registerRequestDTO.password,
+                                          userType:
+                                              _registerRequestDTO.userType,
+                                          stateId: value);
+                                    });
+                                  },
                                 ),
                               ],
                             ),
