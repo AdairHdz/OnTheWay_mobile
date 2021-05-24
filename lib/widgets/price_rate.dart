@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
-import 'package:on_the_way_mobile/data/dataTransferObjects/priceRateDTO/priceRateDTO.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/priceRateDTO/priceRateResponseDTO.dart';
 import "../widgets/price_rate_item.dart";
 
 class PriceRate extends StatelessWidget {
-  final List<PriceRateDTO> priceRates;
+  final List<PriceRateResponseDTO> priceRates;
 
   const PriceRate(this.priceRates);
   @override
@@ -19,7 +19,7 @@ class PriceRate extends StatelessWidget {
                   cityName: priceRate.city.name,
                   startingHour: priceRate.startingHour,
                   endingHour: priceRate.endingHour,
-                  kindOfService: 0,
+                  kindOfService: priceRate.kindOfService,
                   weekdays: priceRate.workingDays,
                   priceRate: priceRate.price,
                 ),

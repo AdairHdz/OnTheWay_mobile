@@ -1,5 +1,11 @@
 import "package:flutter/material.dart";
 
+class CustomInput {
+  String child;
+  String value;
+  CustomInput({this.child, this.value});
+}
+
 class CustomDropdownButton extends StatefulWidget {
   const CustomDropdownButton({this.hint, this.options});
 
@@ -7,16 +13,17 @@ class CustomDropdownButton extends StatefulWidget {
   _CustomDropdownButtonState createState() => _CustomDropdownButtonState();
 
   final String hint;
-  final List<String> options;
+  final List<CustomInput> options;
 }
 
 class _CustomDropdownButtonState extends State<CustomDropdownButton> {
-  String _dropdownValue;
+  // String _dropdownValue;
 
   @override
   void initState() {
     super.initState();
-    _dropdownValue = widget.options[0];
+    // _dropdownValue = widget.options[0].value;
+    // _dropdownValue = "";
   }
 
   @override
@@ -24,19 +31,21 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
     return DropdownButtonFormField(
       hint: Text(widget.hint),
       items: [
-        ...widget.options.map(
-          (option) {
-            return DropdownMenuItem(
-              child: Text(option),
-              value: option,
-            );
-          },
-        )
+        if (widget.options.isNotEmpty)
+          ...widget.options.map(
+            (option) {
+              return DropdownMenuItem(
+                child: Text(option.child),
+                value: option.value,
+              );
+            },
+          )
       ],
-      value: _dropdownValue,
+      // value: _dropdownValue,
       onChanged: (value) {
         setState(() {
-          _dropdownValue = value;
+          print(value);
+          // _dropdownValue = value;
         });
       },
     );

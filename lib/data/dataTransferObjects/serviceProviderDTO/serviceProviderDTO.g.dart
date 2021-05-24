@@ -14,8 +14,9 @@ ServiceProviderDTO _$ServiceProviderDTOFromJson(Map<String, dynamic> json) {
     emailAddress: json['emailAddress'] as String,
     averageScore: json['averageScore'] as int,
     priceRates: (json['priceRates'] as List)
-        ?.map((e) =>
-            e == null ? null : PriceRateDTO.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null
+            ? null
+            : PriceRateResponseDTO.fromJson(e as Map<String, dynamic>))
         ?.toList(),
   );
 }

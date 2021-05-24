@@ -1,10 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/cityDTO/cityDTO.dart';
 
-part "priceRateDTO.g.dart";
+part 'priceRateResponseDTO.g.dart';
 
 @JsonSerializable()
-class PriceRateDTO {
+class PriceRateResponseDTO {
   String id;
   String startingHour;
   String endingHour;
@@ -13,7 +13,7 @@ class PriceRateDTO {
   CityDTO city;
   List<int> workingDays;
 
-  PriceRateDTO(
+  PriceRateResponseDTO(
       {this.id,
       this.startingHour,
       this.endingHour,
@@ -22,8 +22,8 @@ class PriceRateDTO {
       this.city,
       this.workingDays});
 
-  factory PriceRateDTO.fromJson(Map<String, dynamic> json) =>
-      _$PriceRateDTOFromJson(json);
+  factory PriceRateResponseDTO.fromJson(Map<String, dynamic> json) =>
+      _$PriceRateResponseDTOFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PriceRateDTOToJson(this);
+  Map<String, dynamic> toJson() => _$PriceRateResponseDTOToJson(this);
 }

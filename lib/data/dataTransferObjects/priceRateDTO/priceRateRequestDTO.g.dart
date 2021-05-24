@@ -1,32 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'priceRateDTO.dart';
+part of 'priceRateRequestDTO.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-PriceRateDTO _$PriceRateDTOFromJson(Map<String, dynamic> json) {
-  return PriceRateDTO(
-    id: json['id'] as String,
+PriceRateRequestDTO _$PriceRateRequestDTOFromJson(Map<String, dynamic> json) {
+  return PriceRateRequestDTO(
     startingHour: json['startingHour'] as String,
     endingHour: json['endingHour'] as String,
     price: (json['price'] as num)?.toDouble(),
     kindOfService: json['kindOfService'] as int,
-    city: json['city'] == null
-        ? null
-        : CityDTO.fromJson(json['city'] as Map<String, dynamic>),
+    cityId: json['cityId'] as String,
     workingDays: (json['workingDays'] as List)?.map((e) => e as int)?.toList(),
-  );
+  )..id = json['id'] as String;
 }
 
-Map<String, dynamic> _$PriceRateDTOToJson(PriceRateDTO instance) =>
+Map<String, dynamic> _$PriceRateRequestDTOToJson(
+        PriceRateRequestDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
       'startingHour': instance.startingHour,
       'endingHour': instance.endingHour,
       'price': instance.price,
       'kindOfService': instance.kindOfService,
-      'city': instance.city,
+      'cityId': instance.cityId,
       'workingDays': instance.workingDays,
     };
