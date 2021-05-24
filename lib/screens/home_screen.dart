@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
+import 'package:on_the_way_mobile/widgets/main_drawer.dart';
 import '../widgets/price_rate.dart';
 import "../widgets/profile_info.dart";
 

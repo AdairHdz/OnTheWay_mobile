@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:on_the_way_mobile/models/service.dart';
+import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
+import 'package:on_the_way_mobile/screens/request_service.dart';
 import 'package:on_the_way_mobile/screens/tabs_screen.dart';
 import "./screens/services_screen.dart";
 import 'screens/initial_screen.dart';
@@ -44,6 +46,8 @@ class MyApp extends StatelessWidget {
         "/price-rate": (ctx) => PriceRateRegistrationScreen(),
         "/accept_cancel_service": (ctx) => AcceptCancelService(),
         "/statistics": (ctx) => StatisticsScreen(),
+        "/homesr": (ctx) => HomeScreenSr(),
+        "/request_service": (ctx) => RequestService(),
       },
     );
   }

@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../models/service.dart';
 
 class AcceptCancelService extends StatelessWidget {
   static final String routeName = "/accept_cancel_service";
   bool isVisibleForCancel = true;
   bool isVisibleForAccept = true;
   @override
+
+  bool _changeServiceStatus(){
+    
+  }
+
   Widget build(BuildContext context) {
     final Map service = ModalRoute.of(context).settings.arguments;
     switch (service['serviceStatus']) {
@@ -53,7 +57,7 @@ class AcceptCancelService extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
-                        "Solicitud de servicio",
+                        "Detalles del servicio",
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 30,
