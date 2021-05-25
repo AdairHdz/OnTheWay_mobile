@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
 import "../widgets/accent_button.dart";
 import "./home_screen.dart";
 
@@ -22,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _goToHomeScreen(BuildContext context) {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(HomeScreenSr.routeName);
   }
 
   @override
