@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/loginRequestDTO.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/loginResponseDTO.dart';
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _goToHomeScreen(BuildContext context) async {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(HomeScreenSr.routeName);
   }
 
   void _goToResetPassword() {
