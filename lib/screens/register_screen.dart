@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
+    print("TIPO DE USUARIO  ${_registerRequestDTO.userType}");
     if (dataIsValid) {
       _form.currentState.save();
       _registerUser();
@@ -276,6 +277,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           SizedBox(
                             height: 20,
+                          ),
+                          DropdownButtonFormField(
+                            hint: Text("Tipo de usuario"),
+                            value: _registerRequestDTO.userType,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text("Proveedor de servicio"),
+                                value: 0,
+                              ),
+                              DropdownMenuItem(
+                                child: Text("Solicitante de servicio"),
+                                value: 1,
+                              )
+                            ],
+                            validator: (value) {
+                              if (value == null) {
+                                return "Seleccione un tipo de usuario";
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                _registerRequestDTO = RegisterRequestDTO(
+                                    names: _registerRequestDTO.names,
+                                    lastName: _registerRequestDTO.lastName,
+                                    emailAddress:
+                                        _registerRequestDTO.emailAddress,
+                                    password: _registerRequestDTO.password,
+                                    userType: value,
+                                    stateId: _registerRequestDTO.stateId);
+                              });
+                            },
                           ),
                           SizedBox(
                             height: 30,

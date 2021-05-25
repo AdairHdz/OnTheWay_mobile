@@ -7,6 +7,7 @@ import 'package:on_the_way_mobile/data/dataTransferObjects/loginResponseDTO.dart
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
+import 'package:on_the_way_mobile/models/user_types.dart';
 import 'package:on_the_way_mobile/widgets/notificationPopup.dart';
 import "../widgets/accent_button.dart";
 import "./home_screen.dart";
@@ -67,9 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
         mySession.userType = loginResponse.userType;
         mySession.token = loginResponse.token;
         mySession.stateId = loginResponse.stateId;
-        print(loginResponse.stateId);
-        print(mySession.stateId);
-        navigateToHomeScreen(context);
+
+        if (loginResponse.userType == UserType.ServiceProviderType) {
+          navigateToHomeScreen(context);
+        } else {
+          print("Solicitante de servicios");
+          //Navegar a ventana principal de solicitante de servicios
+        }
       }
     } on TimeoutException catch (_) {
       _showNotification(
