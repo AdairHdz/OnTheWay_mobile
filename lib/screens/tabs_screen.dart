@@ -4,6 +4,8 @@ import './statistics_screen.dart';
 import 'home_screen.dart';
 import 'services_screen.dart';
 
+import 'edit_profile_screen.dart';
+
 class TabsScreen extends StatefulWidget {
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -31,7 +33,7 @@ class _TabsScreenState extends State<TabsScreen> {
       },
       {
         "title": "Profile",
-        "page": HomeScreen(),
+        "page": EditProfileScreen(),
       }
     ];
     super.initState();

@@ -8,9 +8,12 @@ import 'screens/initial_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/price_rate_registration_screen.dart';
 import 'screens/register_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/accept_cancel_service.dart';
 import 'screens/statistics_screen.dart';
+import 'screens/edit_profile_screen.dart';
+import 'screens/reset_password_screen.dart';
+import 'screens/reset_password_screen2.dart';
+import 'screens/reset_password_screen3.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,6 +51,10 @@ class MyApp extends StatelessWidget {
         "/statistics": (ctx) => StatisticsScreen(),
         "/homesr": (ctx) => HomeScreenSr(),
         "/request_service": (ctx) => RequestService(),
+        "/edit-profile": (ctx) => EditProfileScreen(),
+        "/reset-password": (ctx) => ResetPasswordScreen(),
+        "/reset-password2": (ctx) => ResetPasswordScreen2(),
+        "/reset-password3": (ctx) => ResetPasswordScreen3(),
       },
     );
   }

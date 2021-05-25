@@ -1,4 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/data/dataTransferObjects/registerRequestDTO.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/stateDTO/stateDTO.dart';
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
 import "../widgets/accent_button.dart";
 
 class RegisterScreen extends StatefulWidget {
@@ -9,40 +17,77 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _form = GlobalKey<FormState>();
+  List<CustomInput> listOfStates = List.empty(growable: true);
+  RegisterRequestDTO _registerRequestDTO = RegisterRequestDTO(
+      names: "",
+      lastName: "",
+      emailAddress: "",
+      password: "",
+      stateId: "",
+      userType: 0);
 
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
-    print(dataIsValid);
+    print("TIPO DE USUARIO  ${_registerRequestDTO.userType}");
     if (dataIsValid) {
       _form.currentState.save();
+      _registerUser();
     }
   }
 
-  Future<void> _showMyDialog(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext ctx) {
-        return AlertDialog(
-          title: Text("Contraseña insegura"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Text(
-                    "Por favor inserte una contraseña con al menos 8 caracteres"),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-                child: Text("Aceptar"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    _fetchStates();
+  }
+
+  Future<void> _fetchStates() async {
+    RestRequest request = RestRequest();
+    try {
+      var response = await request.getResource("/v1/states");
+      if (response.statusCode == 200) {
+        List<StateDTO> listOfStatesDTO = (json.decode(response.body) as List)
+            .map((i) => StateDTO.fromJson(i))
+            .toList();
+        listOfStatesDTO.forEach((stateDTO) {
+          setState(() {
+            CustomInput customInput =
+                CustomInput(child: stateDTO.name, value: stateDTO.id);
+            listOfStates.add(customInput);
+          });
+        });
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  Future<void> _registerUser() async {
+    RestRequest request = RestRequest();
+    try {
+      var response =
+          await request.postResource("/v1/register", _registerRequestDTO);
+      if (response.statusCode == 201) {
+        showNotification(context, "Usuario registrado",
+            "El usuario se ha registrado correctamente", "Aceptar");
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
   }
 
   @override
@@ -101,11 +146,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             caseSensitive: false)
                                         .hasMatch(value.trim());
                                     if (isValidData) {
-                                      print("Valida");
                                       return null;
                                     }
-                                    print("Invalida");
                                     return "Por favor inserte solo letras y espacios en blanco";
+                                  },
+                                  onSaved: (value) {
+                                    _registerRequestDTO = RegisterRequestDTO(
+                                        names: value,
+                                        lastName: _registerRequestDTO.lastName,
+                                        emailAddress:
+                                            _registerRequestDTO.emailAddress,
+                                        password: _registerRequestDTO.password,
+                                        userType: _registerRequestDTO.userType,
+                                        stateId: _registerRequestDTO.stateId);
                                   },
                                 ),
                                 TextFormField(
@@ -121,6 +174,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     }
                                     return "Por favor inserte solo letras y espacios en blanco";
                                   },
+                                  onSaved: (value) {
+                                    _registerRequestDTO = RegisterRequestDTO(
+                                        names: _registerRequestDTO.names,
+                                        lastName: value,
+                                        emailAddress:
+                                            _registerRequestDTO.emailAddress,
+                                        password: _registerRequestDTO.password,
+                                        userType: _registerRequestDTO.userType,
+                                        stateId: _registerRequestDTO.stateId);
+                                  },
                                 ),
                                 TextFormField(
                                   decoration:
@@ -135,12 +198,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     }
                                     return "Dirección de correo inválida";
                                   },
+                                  onSaved: (value) {
+                                    _registerRequestDTO = RegisterRequestDTO(
+                                        names: _registerRequestDTO.names,
+                                        lastName: _registerRequestDTO.lastName,
+                                        emailAddress: value,
+                                        password: _registerRequestDTO.password,
+                                        userType: _registerRequestDTO.userType,
+                                        stateId: _registerRequestDTO.stateId);
+                                  },
                                 ),
                                 TextFormField(
                                   decoration:
                                       InputDecoration(labelText: "Contraseña"),
                                   onSaved: (value) {
-                                    print(value);
+                                    _registerRequestDTO = RegisterRequestDTO(
+                                        names: _registerRequestDTO.names,
+                                        lastName: _registerRequestDTO.lastName,
+                                        emailAddress:
+                                            _registerRequestDTO.emailAddress,
+                                        password: value,
+                                        userType: _registerRequestDTO.userType,
+                                        stateId: _registerRequestDTO.stateId);
                                   },
                                   validator: (value) {
                                     String password = value.trim();
@@ -148,15 +227,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         password.length <= 50) {
                                       return null;
                                     }
-                                    _showMyDialog(context);
+                                    showNotification(
+                                        context,
+                                        "Contaseña insegura",
+                                        "Por favor ingrese una contraseña con al menos 8 caracteres",
+                                        "Aceptar");
                                     return "Contraseña inválida";
                                   },
                                   obscureText: true,
                                 ),
-                                TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: "Confirmar contraseña"),
-                                  obscureText: true,
+                                DropdownButtonFormField(
+                                  hint: Text("Estado"),
+                                  items: [
+                                    if (listOfStates != null &&
+                                        listOfStates.isNotEmpty)
+                                      ...listOfStates.map(
+                                        (option) {
+                                          return DropdownMenuItem(
+                                            child: Text(option.child),
+                                            value: option.value,
+                                          );
+                                        },
+                                      )
+                                  ],
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "Seleccione un estado";
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _registerRequestDTO = RegisterRequestDTO(
+                                          names: _registerRequestDTO.names,
+                                          lastName:
+                                              _registerRequestDTO.lastName,
+                                          emailAddress:
+                                              _registerRequestDTO.emailAddress,
+                                          password:
+                                              _registerRequestDTO.password,
+                                          userType:
+                                              _registerRequestDTO.userType,
+                                          stateId: value);
+                                    });
+                                  },
                                 ),
                               ],
                             ),
@@ -164,13 +278,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(
                             height: 20,
                           ),
-                          TextButton(
-                            child: Text("¿Olvidaste tu contraseña?"),
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              foregroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.grey),
-                            ),
+                          DropdownButtonFormField(
+                            hint: Text("Tipo de usuario"),
+                            value: _registerRequestDTO.userType,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text("Proveedor de servicio"),
+                                value: 0,
+                              ),
+                              DropdownMenuItem(
+                                child: Text("Solicitante de servicio"),
+                                value: 1,
+                              )
+                            ],
+                            validator: (value) {
+                              if (value == null) {
+                                return "Seleccione un tipo de usuario";
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                _registerRequestDTO = RegisterRequestDTO(
+                                    names: _registerRequestDTO.names,
+                                    lastName: _registerRequestDTO.lastName,
+                                    emailAddress:
+                                        _registerRequestDTO.emailAddress,
+                                    password: _registerRequestDTO.password,
+                                    userType: value,
+                                    stateId: _registerRequestDTO.stateId);
+                              });
+                            },
                           ),
                           SizedBox(
                             height: 30,
