@@ -32,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _getServiceProviderData() async {
     RestRequest request = RestRequest();
     try {
-      var response = await request.getResource("/v1/providers/${Session().id}");
+      var response =
+          await request.getResource("/v1/providers/${Session().id}", true);
       Map<String, dynamic> serviceProviderMap = jsonDecode(response.body);
       setState(() {
         _serviceProviderDTO = ServiceProviderDTO.fromJson(serviceProviderMap);

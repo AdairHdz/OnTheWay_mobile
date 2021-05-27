@@ -54,7 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginUser() async {
     RestRequest request = RestRequest();
     try {
-      var response = await request.postResource("/v1/login", _loginRequestDTO);
+      var response =
+          await request.postResource("/v1/login", _loginRequestDTO, false);
       if (response.statusCode == 200) {
         Map<String, dynamic> loginResponseMap = jsonDecode(response.body);
         LoginResponseDTO loginResponse =
