@@ -129,7 +129,7 @@ class _PriceRateRegistrationScreenState
     Session mySession = Session();
     try {
       var response = await request.postResource(
-          "/v1/providers/${mySession.id}/priceRates", _priceRateDTO);
+          "/v1/providers/${mySession.id}/priceRates", _priceRateDTO, true);
       if (response.statusCode == 201) {
         showNotification(context, "Tarifa registrada",
             "La tarifa se ha registrado de forma exitosa", "Aceptar");
@@ -150,8 +150,8 @@ class _PriceRateRegistrationScreenState
     RestRequest request = RestRequest();
     Session mySession = Session();
     try {
-      var response =
-          await request.getResource("/v1/states/${mySession.stateId}/cities");
+      var response = await request.getResource(
+          "/v1/states/${mySession.stateId}/cities", false);
       if (response.statusCode == 200) {
         List<CityDTO> listOfCitiesDTO = (jsonDecode(response.body) as List)
             .map((i) => CityDTO.fromJson(i))
