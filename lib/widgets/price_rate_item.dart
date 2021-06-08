@@ -1,73 +1,84 @@
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/widgets/weekdayCircle.dart';
 
 class PriceRateItem extends StatelessWidget {
-  final String day;
+  final String cityName;
+  final List<int> weekdays;
+  final int kindOfService;
   final String startingHour;
   final String endingHour;
-  final int priceRate;
+  final double priceRate;
 
   const PriceRateItem({
-    this.day,
+    this.weekdays,
     this.startingHour,
     this.endingHour,
     this.priceRate,
+    this.cityName,
+    this.kindOfService,
   });
+
+  String get kindOfServiceName {
+    String kindOfServiceName = "";
+    switch (kindOfService) {
+      case 0:
+        kindOfServiceName = "Pago de servicios";
+        break;
+      case 1:
+        kindOfServiceName = "Compra de fármacos";
+        break;
+      case 2:
+        kindOfServiceName = "Compra de víveres";
+        break;
+      case 3:
+        kindOfServiceName = "Entrega";
+        break;
+      case 4:
+        kindOfServiceName = "Otro";
+        break;
+    }
+    return kindOfServiceName;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      child: Column(
-        children: [
-          SizedBox(height: 30),
-          Text(
-            day,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+          margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [for (var item in weekdays) WeekdayCircle(item)],
+                  ),
+                  Text(
+                    cityName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    "$startingHour - $endingHour",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    kindOfServiceName,
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-              height: 300,
-              padding: EdgeInsets.all(20),
-              child: ListView.builder(
-                itemCount: 4,
-                itemBuilder: (ctx, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    padding: EdgeInsets.all(10.0),
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      leading: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Text(
-                            "\$$priceRate",
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        "$startingHour - $endingHour",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14),
-                      ),
-                    ),
-                  );
-                },
-              )),
-          SizedBox(
-            height: 10,
-          ),
-        ],
-      ),
+          )),
     );
   }
 }

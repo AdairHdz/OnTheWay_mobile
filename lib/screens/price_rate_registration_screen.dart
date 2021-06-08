@@ -1,5 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/cityDTO/cityDTO.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/priceRateDTO/priceRateRequestDTO.dart';
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
 import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
 import "package:weekday_selector/weekday_selector.dart";
 
@@ -16,7 +26,18 @@ class _PriceRateRegistrationScreenState
   final _form = GlobalKey<FormState>();
   final List<bool> _selectedDays = List.filled(7, false);
   TimeOfDay _startingHour = TimeOfDay.now();
-  TimeOfDay _endingHour = TimeOfDay.now();
+  TimeOfDay _endingHour =
+      TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 1)));
+
+  PriceRateRequestDTO _priceRateDTO = PriceRateRequestDTO(
+      price: 0,
+      kindOfService: 0,
+      startingHour: "",
+      endingHour: "",
+      cityId: "",
+      workingDays: null);
+  List<CustomInput> listOfCities = List.empty(growable: true);
+  List<CustomInput> listOfKindOfServices = List.empty(growable: true);
 
   Future<void> _showMyDialog(BuildContext context) async {
     return showDialog<void>(
@@ -44,14 +65,114 @@ class _PriceRateRegistrationScreenState
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchCities();
+    _priceRateDTO = PriceRateRequestDTO(
+        price: 0,
+        kindOfService: 0,
+        startingHour: formatHour(DateTime.now()),
+        endingHour: formatHour(DateTime.now()),
+        cityId: "",
+        workingDays: null);
+
+    listOfKindOfServices
+        .add(CustomInput(child: "Pago de servicios", value: "0"));
+    listOfKindOfServices
+        .add(CustomInput(child: "Compra de fármacos", value: "1"));
+    listOfKindOfServices
+        .add(CustomInput(child: "Compra de víveres", value: "2"));
+    listOfKindOfServices.add(CustomInput(child: "Entrega", value: "3"));
+    listOfKindOfServices.add(CustomInput(child: "Otro", value: "4"));
+  }
+
+  String formatHour(DateTime time) {
+    String formattedHour = DateFormat.jm().format(
+        new DateTime(time.year, time.month, time.day, time.hour, time.minute));
+
+    return formattedHour;
+  }
+
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
     if (_atLeastOneDayHasBeenSelected()) {
       if (dataIsValid) {
         _form.currentState.save();
+        List<int> workingDaysToBeSaved = List.empty(growable: true);
+        for (int i = 0; i < _selectedDays.length; i++) {
+          if (_selectedDays[i]) {
+            if (i == 0) {
+              workingDaysToBeSaved.add(7);
+            } else {
+              workingDaysToBeSaved.add(i);
+            }
+          }
+        }
+        _priceRateDTO.workingDays = workingDaysToBeSaved;
+        _priceRateDTO.startingHour =
+            removeWhiteSpaces(_priceRateDTO.startingHour);
+        _priceRateDTO.endingHour = removeWhiteSpaces(_priceRateDTO.endingHour);
+        _savePriceRate();
       }
     } else {
       _showMyDialog(context);
+    }
+  }
+
+  String removeWhiteSpaces(String text) {
+    return text.replaceAll(" ", "");
+  }
+
+  Future<void> _savePriceRate() async {
+    RestRequest request = RestRequest();
+    Session mySession = Session();
+    try {
+      var response = await request.postResource(
+          "/v1/providers/${mySession.id}/priceRates", _priceRateDTO, true);
+      if (response.statusCode == 201) {
+        showNotification(context, "Tarifa registrada",
+            "La tarifa se ha registrado de forma exitosa", "Aceptar");
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  Future<void> _fetchCities() async {
+    RestRequest request = RestRequest();
+    Session mySession = Session();
+    try {
+      var response = await request.getResource(
+          "/v1/states/${mySession.stateId}/cities", false);
+      if (response.statusCode == 200) {
+        List<CityDTO> listOfCitiesDTO = (jsonDecode(response.body) as List)
+            .map((i) => CityDTO.fromJson(i))
+            .toList();
+        listOfCitiesDTO.forEach((cityDTO) {
+          setState(() {
+            CustomInput customInput =
+                CustomInput(child: cityDTO.name, value: cityDTO.id);
+            listOfCities.add(customInput);
+          });
+        });
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
     }
   }
 
@@ -72,122 +193,235 @@ class _PriceRateRegistrationScreenState
       appBar: AppBar(
         title: Text("List of services"),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 30),
-          Center(
-            child: Text(
-              "Nueva tarifa",
-              style: Theme.of(context).textTheme.headline1,
-            ),
-          ),
-          SizedBox(height: 30),
-          Form(
-            key: _form,
-            child: SizedBox(
-              width: 300,
-              child: Column(
-                children: [
-                  WeekdaySelector(
-                      onChanged: (day) => setDaySelected(day),
-                      values: _selectedDays),
-                  SizedBox(height: 30),
-                  CustomDropdownButton(
-                    hint: "Estado",
-                    options: ["Veracruz"],
-                  ),
-                  SizedBox(height: 30),
-                  CustomDropdownButton(
-                    hint: "Ciudad",
-                    options: ["Xalapa", "Coatepec", "Xico"],
-                  ),
-                  SizedBox(height: 30),
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(hintText: "Tarifa"),
-                    validator: (value) {
-                      var isValidData = new RegExp(r"^\d{1,4}(?:[.]\d{1,2})?$",
-                              caseSensitive: false)
-                          .hasMatch(value.trim());
-                      if (isValidData) {
-                        return null;
-                      }
-                      return "Número no válido";
-                    },
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            Text("Desde",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 20),
-                            GestureDetector(
-                              child: Text(_startingHour.format(context)),
-                              onTap: () {
-                                showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                ).then((value) {
-                                  if (value == null) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    _startingHour = value;
-                                  });
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text("Hasta",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                            SizedBox(height: 20),
-                            GestureDetector(
-                              child: Text(_endingHour.format(context)),
-                              onTap: () {
-                                showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                ).then((value) {
-                                  if (value == null) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    _endingHour = value;
-                                  });
-                                });
-                              },
-                            ),
-                          ],
-                        )
-                      ]),
-                  SizedBox(height: 50),
-                  Container(
-                    width: 130,
-                    child: ElevatedButton(
-                        child: Text("Aceptar"),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              Theme.of(context).accentColor),
-                        ),
-                        onPressed: () => _saveForm()),
-                  )
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 30),
+            Center(
+              child: Text(
+                "Nueva tarifa",
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
-          ),
-        ],
+            SizedBox(height: 30),
+            Form(
+              key: _form,
+              child: SizedBox(
+                width: 300,
+                child: Column(
+                  children: [
+                    WeekdaySelector(
+                        onChanged: (day) => setDaySelected(day),
+                        values: _selectedDays),
+                    SizedBox(height: 30),
+                    SizedBox(height: 30),
+                    DropdownButtonFormField(
+                      hint: Text("Ciudad"),
+                      items: [
+                        if (listOfCities != null && listOfCities.isNotEmpty)
+                          ...listOfCities.map(
+                            (option) {
+                              return DropdownMenuItem(
+                                child: Text(option.child),
+                                value: option.value,
+                              );
+                            },
+                          )
+                      ],
+                      validator: (value) {
+                        if (value == null) {
+                          return "Seleccione una ciudad";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        _priceRateDTO = PriceRateRequestDTO(
+                            price: _priceRateDTO.price,
+                            kindOfService: _priceRateDTO.kindOfService,
+                            startingHour: _priceRateDTO.startingHour,
+                            endingHour: _priceRateDTO.endingHour,
+                            cityId: value,
+                            workingDays: _priceRateDTO.workingDays);
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    DropdownButtonFormField(
+                      hint: Text("Tipo de servicio"),
+                      items: [
+                        if (listOfKindOfServices != null &&
+                            listOfKindOfServices.isNotEmpty)
+                          ...listOfKindOfServices.map(
+                            (option) {
+                              return DropdownMenuItem(
+                                child: Text(option.child),
+                                value: option.value,
+                              );
+                            },
+                          )
+                      ],
+                      validator: (value) {
+                        if (value == null) {
+                          return "Seleccione un tipo de servicio";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        _priceRateDTO = PriceRateRequestDTO(
+                            price: _priceRateDTO.price,
+                            kindOfService: int.parse(value),
+                            startingHour: _priceRateDTO.startingHour,
+                            endingHour: _priceRateDTO.endingHour,
+                            cityId: _priceRateDTO.cityId,
+                            workingDays: _priceRateDTO.workingDays);
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(hintText: "Tarifa"),
+                      validator: (value) {
+                        var isValidData = new RegExp(
+                                r"^\d{1,4}(?:[.]\d{1,2})?$",
+                                caseSensitive: false)
+                            .hasMatch(value.trim());
+
+                        if (!isValidData) {
+                          return "Tarifa no válida";
+                        }
+
+                        double parsedPriceRate = double.parse(value);
+
+                        if (parsedPriceRate <= 0) {
+                          return "La tarifa no puede ser igual o menor a 0";
+                        }
+
+                        if (parsedPriceRate > 100) {
+                          return "No se permiten tarifas con un valor mayor a \$100.00 MXN";
+                        }
+
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _priceRateDTO = PriceRateRequestDTO(
+                            price: double.parse(value),
+                            kindOfService: _priceRateDTO.kindOfService,
+                            startingHour: _priceRateDTO.startingHour,
+                            endingHour: _priceRateDTO.endingHour,
+                            cityId: _priceRateDTO.cityId,
+                            workingDays: _priceRateDTO.workingDays);
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            children: [
+                              Text("Desde",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  )),
+                              SizedBox(height: 20),
+                              GestureDetector(
+                                child: Text(_startingHour.format(context)),
+                                onTap: () {
+                                  showTimePicker(
+                                    context: context,
+                                    initialTime: _startingHour,
+                                  ).then((value) {
+                                    if (value == null) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      final now = new DateTime.now();
+                                      String formattedStartingHour =
+                                          DateFormat.jm().format(new DateTime(
+                                              now.year,
+                                              now.month,
+                                              now.day,
+                                              value.hour,
+                                              value.minute));
+
+                                      _priceRateDTO = PriceRateRequestDTO(
+                                          price: _priceRateDTO.price,
+                                          kindOfService:
+                                              _priceRateDTO.kindOfService,
+                                          startingHour: formattedStartingHour,
+                                          endingHour: _priceRateDTO.endingHour,
+                                          cityId: _priceRateDTO.cityId,
+                                          workingDays:
+                                              _priceRateDTO.workingDays);
+                                      _startingHour = value;
+                                    });
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text("Hasta",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  )),
+                              SizedBox(height: 20),
+                              GestureDetector(
+                                child: Text(_endingHour.format(context)),
+                                onTap: () {
+                                  showTimePicker(
+                                    context: context,
+                                    initialTime: _endingHour,
+                                  ).then((value) {
+                                    if (value == null) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      final now = new DateTime.now();
+                                      String formattedEndingHour =
+                                          DateFormat.jm().format(new DateTime(
+                                              now.year,
+                                              now.month,
+                                              now.day,
+                                              value.hour,
+                                              value.minute));
+
+                                      _priceRateDTO = PriceRateRequestDTO(
+                                          price: _priceRateDTO.price,
+                                          kindOfService:
+                                              _priceRateDTO.kindOfService,
+                                          startingHour:
+                                              _priceRateDTO.startingHour,
+                                          endingHour: formattedEndingHour,
+                                          cityId: _priceRateDTO.cityId,
+                                          workingDays:
+                                              _priceRateDTO.workingDays);
+                                      _endingHour = value;
+                                    });
+                                  });
+                                },
+                              ),
+                            ],
+                          )
+                        ]),
+                    SizedBox(height: 50),
+                    Container(
+                      width: 130,
+                      child: ElevatedButton(
+                          child: Text("Aceptar"),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                Theme.of(context).accentColor),
+                          ),
+                          onPressed: () => _saveForm()),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

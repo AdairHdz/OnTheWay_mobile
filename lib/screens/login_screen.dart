@@ -1,6 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
+
 import "package:flutter/material.dart";
+import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/loginRequestDTO.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/loginResponseDTO.dart';
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
+import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
+import 'package:on_the_way_mobile/models/user_types.dart';
+import 'package:on_the_way_mobile/widgets/notificationPopup.dart';
 import "../widgets/accent_button.dart";
 import "./home_screen.dart";
+import "./reset_password_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   static final String routeName = "/login";
@@ -11,18 +23,81 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
-
+  LoginRequestDTO _loginRequestDTO =
+      LoginRequestDTO(emailAddress: "", password: "");
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
     if (dataIsValid) {
-      _goToHomeScreen(context);
       _form.currentState.save();
+      _loginUser();
     }
   }
 
-  void _goToHomeScreen(BuildContext context) {
+  Future<void> _showNotification(BuildContext context, String popupTitle,
+      String popupBody, String popupButtonText) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext _) {
+        return NotificationPopup(
+          title: popupTitle,
+          body: popupBody,
+          buttonText: popupButtonText,
+        );
+      },
+    );
+  }
+
+  void navigateToHomeScreen(BuildContext context) {
+    Navigator.of(context).pushNamed("/home");
+  }
+
+  Future<void> _loginUser() async {
+    RestRequest request = RestRequest();
+    try {
+      var response =
+          await request.postResource("/v1/login", _loginRequestDTO, false);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> loginResponseMap = jsonDecode(response.body);
+        LoginResponseDTO loginResponse =
+            LoginResponseDTO.fromJson(loginResponseMap);
+        Session mySession = Session();
+        mySession.id = loginResponse.id;
+        mySession.names = loginResponse.names;
+        mySession.lastName = loginResponse.lastName;
+        mySession.emailAddress = loginResponse.emailAddress;
+        mySession.verified = loginResponse.verified;
+        mySession.userType = loginResponse.userType;
+        mySession.token = loginResponse.token;
+        mySession.stateId = loginResponse.stateId;
+
+        if (loginResponse.userType == UserType.ServiceProviderType) {
+          navigateToHomeScreen(context);
+        } else {
+          print("Solicitante de servicios");
+          //Navegar a ventana principal de solicitante de servicios
+        }
+      }
+    } on TimeoutException catch (_) {
+      _showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      _showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  Future<void> _goToHomeScreen(BuildContext context) async {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(HomeScreenSr.routeName);
+  }
+
+  void _goToResetPassword() {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed(ResetPasswordScreen.routeName);
   }
 
   @override
@@ -87,7 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return "Dirección de correo inválida";
                                   },
                                   onSaved: (value) {
-                                    print(value);
+                                    _loginRequestDTO = LoginRequestDTO(
+                                        emailAddress: value,
+                                        password: _loginRequestDTO.password);
                                   },
                                 ),
                                 SizedBox(
@@ -97,6 +174,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration:
                                       InputDecoration(labelText: "Contraseña"),
                                   obscureText: true,
+                                  onSaved: (value) {
+                                    _loginRequestDTO = LoginRequestDTO(
+                                        emailAddress:
+                                            _loginRequestDTO.emailAddress,
+                                        password: value);
+                                  },
                                 )
                               ],
                             ),
@@ -106,7 +189,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextButton(
                             child: Text("¿Olvidaste tu contraseña?"),
-                            onPressed: () {},
+                            onPressed: () {
+                              _goToResetPassword();
+                            },
                             style: ButtonStyle(
                               foregroundColor:
                                   MaterialStateProperty.all<Color>(Colors.grey),
