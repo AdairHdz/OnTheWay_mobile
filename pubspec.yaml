@@ -67,6 +67,7 @@ flutter:
     - assets/images/logo-black.png
     - assets/images/canceled.png
     - assets/images/pending.png
+    - assets/images/OnTheWay.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

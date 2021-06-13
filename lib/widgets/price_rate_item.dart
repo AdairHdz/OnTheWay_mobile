@@ -63,6 +63,13 @@ class PriceRateItem extends StatelessWidget {
                     ),
                   ),
                   Text(
+                    "\$$priceRate MXN",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
                     "$startingHour - $endingHour",
                     style: TextStyle(
                       fontSize: 16,

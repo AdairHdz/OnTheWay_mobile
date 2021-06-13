@@ -1,14 +1,17 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
 import 'dart:convert';
 import 'dart:async';
-
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 import 'requestable.dart';
 
 class RestRequest implements Requestable {
   //static final String baseURL = "192.168.100.41:8080";
-  static final String baseURL = "192.168.100.41:8080";
+  static final String baseURL = "192.168.100.173:8080";
   @override
   Future<http.Response> getResource(String endpoint, bool includeToken,
       [Map<String, String> requestHeaders]) async {
@@ -147,5 +150,34 @@ class RestRequest implements Requestable {
       throw NetworkRequestException(errorMessage, response.statusCode);
     }
     return response;
+  }
+
+  @override
+  Future<http.Response> putImageResource(
+      String endpoint, String filePath) async {
+    Session mySession = Session();
+    File imageFile = File(filePath);
+
+    Map<String, String> requestHeaders = {
+      "Authorization": "Bearer ${mySession.token}"
+    };
+    var stream =
+        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+
+    var uri = Uri.http(baseURL, endpoint);
+
+    var request = new http.MultipartRequest("PUT", uri);
+    var multipartFile = new http.MultipartFile('image', stream, length,
+        filename: basename(imageFile.path));
+    //contentType: new MediaType('image', 'png'));
+
+    request.headers.addAll(requestHeaders);
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
   }
 }

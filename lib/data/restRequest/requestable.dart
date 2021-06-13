@@ -8,4 +8,5 @@ abstract class Requestable {
       [Map<String, String> requestHeaders]);
   Future<http.Response> deleteResource(String endpoint, bool includeToken,
       [Map<String, String> requestHeaders]);
+  Future<http.Response> putImageResource(String endpoint, String filePath);
 }
