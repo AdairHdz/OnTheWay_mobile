@@ -18,6 +18,7 @@ ServiceProviderDTO _$ServiceProviderDTOFromJson(Map<String, dynamic> json) {
             ? null
             : PriceRateResponseDTO.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    profileImage: json['profileImage'] as String,
   );
 }
 
@@ -29,4 +30,5 @@ Map<String, dynamic> _$ServiceProviderDTOToJson(ServiceProviderDTO instance) =>
       'emailAddress': instance.emailAddress,
       'averageScore': instance.averageScore,
       'priceRates': instance.priceRates?.map((e) => e?.toJson())?.toList(),
+      'profileImage': instance.profileImage,
     };

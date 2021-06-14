@@ -2,15 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import "package:flutter/material.dart";
-import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
-import 'package:on_the_way_mobile/widgets/main_drawer.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/serviceProviderDTO/serviceProviderDTO.dart';
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/notifier.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
-import '../widgets/price_rate.dart';
-import "../widgets/profile_info.dart";
+import 'package:on_the_way_mobile/widgets/price_rate.dart';
+import 'package:on_the_way_mobile/widgets/profile_info.dart';
 
 class HomeScreen extends StatefulWidget {
   static final String routeName = "/home";
@@ -25,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
       lastName: "...",
       emailAddress: "...",
       averageScore: 0,
-      priceRates: new List.empty(growable: true));
+      priceRates: new List.empty(growable: true),
+      profileImage: "");
 
   void navigateToPriceRateRegistry(BuildContext context) {
     Navigator.of(context).pushNamed("/price-rate");
@@ -39,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
       Map<String, dynamic> serviceProviderMap = jsonDecode(response.body);
       setState(() {
         _serviceProviderDTO = ServiceProviderDTO.fromJson(serviceProviderMap);
+        Session session = Session();
+        session.profilePicture = _serviceProviderDTO.profileImage;
       });
     } on TimeoutException catch (_) {
       showNotification(
@@ -75,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     " " +
                     _serviceProviderDTO.lastName,
                 averageScore: _serviceProviderDTO.averageScore,
+                profileImage: _serviceProviderDTO.profileImage,
               ),
               Container(
                 width: deviceWidth * 0.95,

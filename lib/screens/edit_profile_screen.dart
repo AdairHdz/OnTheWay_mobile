@@ -1,5 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/serviceProviderEditionDTO/serviceProviderEditionDTO.dart';
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
 import 'package:on_the_way_mobile/widgets/accent_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -10,19 +18,16 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _form = GlobalKey<FormState>();
-
+  ServiceProviderEditionDTO serviceProviderEditionDTO =
+      ServiceProviderEditionDTO(names: "", lastName: "");
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
     if (dataIsValid) {
       _form.currentState.save();
-      _showMyDialog(context, "Cambios guardados con exito");
+      _updateProfile();
     } else {
       _showMyDialog(context, "“Los campos de texto son inválidos");
     }
-  }
-
-  void _saveChanges() {
-    _saveForm();
   }
 
   Future<void> _showMyDialog(BuildContext context, String message) async {
@@ -51,8 +56,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Image _image = Image.network(
-      "https://images.pexels.com/photos/2611690/pexels-photo-2611690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+  Image noImage = Image.asset("assets/images/OnTheWay.png");
+  Session session = Session();
+  String imagePath = "";
 
   Future<void> _getImage() async {
     final picker = ImagePicker();
@@ -60,123 +66,176 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     //final image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
     setState(() {
-      _image = pickedFile as Image;
+      if (pickedFile != null) {
+        noImage = Image.file(File(pickedFile.path));
+        imagePath = pickedFile.path;
+        _sendImage();
+      }
     });
+  }
+
+  Future<void> _updateProfile() async {
+    RestRequest request = RestRequest();
+    try {
+      Session session = Session();
+      var response = await request.patchResource(
+          "/v1/providers/${session.id}", serviceProviderEditionDTO, true);
+      if (response.statusCode == 200) {
+        showNotification(context, "Información actualizada",
+            "Sus datos se han actualizado correctamente.", "Aceptar");
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  Future<void> _sendImage() async {
+    RestRequest request = RestRequest();
+    try {
+      await request.putImageResource(
+          "/v1/providers/${Session().id}/image", imagePath);
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    imagePath =
+        "http://192.168.100.173:8080/images/${session.id}/${session.profilePicture}";
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
-    var listStates = ['Veracruz', 'Oaxaca', 'Puebla'];
-    String _view = 'Estado';
 
     return Scaffold(
+        appBar: AppBar(
+          title: Text("Editar perfil"),
+        ),
         body: SingleChildScrollView(
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              SizedBox(
-                width: deviceWidth,
-                height: (deviceHeight * 0.30),
-                child: _image,
+          child: Column(
+            children: [
+              Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: deviceWidth,
+                    height: (deviceHeight * 0.30),
+                    child: FittedBox(
+                      child: (imagePath !=
+                              null) // Only use the network image if the url is not null
+                          ? Image.network(
+                              imagePath,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) =>
+                                      (loadingProgress == null)
+                                          ? child
+                                          : CircularProgressIndicator(),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  noImage,
+                            )
+                          : noImage,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: deviceWidth / 2,
+                    child: AccentButton(_getImage, "Editar foto de perfil"),
+                  ),
+                ],
               ),
-              Positioned(
-                top: 0,
-                right: deviceWidth / 2,
-                child: AccentButton(_getImage, "Editar foto de perfil"),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "Perfil",
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                margin: EdgeInsets.symmetric(vertical: 30),
+              ),
+              Center(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+                  child: Form(
+                    key: _form,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Nombres"),
+                          initialValue: Session().names,
+                          validator: (value) {
+                            var isValidData = new RegExp(r"[A-z ]{1,50}",
+                                    caseSensitive: false)
+                                .hasMatch(value.trim());
+                            if (isValidData) {
+                              return null;
+                            }
+                            return "Por favor inserte solo letras y espacios en blanco";
+                          },
+                          onSaved: (value) {
+                            serviceProviderEditionDTO =
+                                ServiceProviderEditionDTO(
+                                    names: value,
+                                    lastName:
+                                        serviceProviderEditionDTO.lastName);
+                          },
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Apellidos"),
+                          initialValue: Session().lastName,
+                          validator: (value) {
+                            var isValidData = new RegExp(r"[A-z ]{1,50}",
+                                    caseSensitive: false)
+                                .hasMatch(value.trim());
+                            if (isValidData) {
+                              return null;
+                            }
+                            return "Por favor inserte solo letras y espacios en blanco";
+                          },
+                          onChanged: (value) {
+                            serviceProviderEditionDTO =
+                                ServiceProviderEditionDTO(
+                                    names: serviceProviderEditionDTO.names,
+                                    lastName: value);
+                          },
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        AccentButton(_saveForm, "Aceptar"),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              "Perfil",
-              style: Theme.of(context).textTheme.headline1,
-            ),
-            margin: EdgeInsets.symmetric(vertical: 30),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
-              child: Form(
-                key: _form,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Nombres"),
-                      validator: (value) {
-                        var isValidData =
-                            new RegExp(r"[A-z ]{1,50}", caseSensitive: false)
-                                .hasMatch(value.trim());
-                        if (isValidData) {
-                          print("Valida");
-                          return null;
-                        }
-                        print("Invalida");
-                        return "Por favor inserte solo letras y espacios en blanco";
-                      },
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Apellidos"),
-                      validator: (value) {
-                        var isValidData =
-                            new RegExp(r"[A-z ]{1,50}", caseSensitive: false)
-                                .hasMatch(value.trim());
-                        if (isValidData) {
-                          return null;
-                        }
-                        return "Por favor inserte solo letras y espacios en blanco";
-                      },
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Correo"),
-                      validator: (value) {
-                        var isValidData = new RegExp(
-                                r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                caseSensitive: false)
-                            .hasMatch(value.trim());
-                        if (isValidData) {
-                          return null;
-                        }
-                        return "Dirección de correo inválida";
-                      },
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    DropdownButton(
-                      items: listStates.map((String _state) {
-                        return DropdownMenuItem(
-                          value: _state,
-                          child: Text(_state),
-                        );
-                      }).toList(),
-                      onChanged: (_value) {
-                        setState(() {
-                          _view = _value;
-                        });
-                      },
-                      hint: Text(_view),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    AccentButton(_saveChanges, "Aceptar"),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 }

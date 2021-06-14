@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import "package:flutter/material.dart";
-import "../widgets/accent_button.dart";
-import "./reset_password_screen3.dart";
+import 'package:on_the_way_mobile/data/dataTransferObjects/passwordRecoveryDTO.dart';
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/widgets/accent_button.dart';
 
 class ResetPasswordScreen2 extends StatefulWidget {
   static final String routeName = "/reset-password2";
@@ -11,21 +16,38 @@ class ResetPasswordScreen2 extends StatefulWidget {
 class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
   final _form = GlobalKey<FormState>();
 
+  PasswordRecoveryDTO passwordRecoveryDTO = PasswordRecoveryDTO("", "", "");
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
-    print(dataIsValid);
     if (dataIsValid) {
       _form.currentState.save();
-      _goToResetPassword3();
+      _restablishPassword();
     }
   }
 
-  void _goToResetPassword3() {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(ResetPasswordScreen3.routeName);
+  Future<void> _restablishPassword() async {
+    RestRequest request = RestRequest();
+    try {
+      var response = await request.patchResource(
+          "/v1/users/password", passwordRecoveryDTO, true);
+      if (response.statusCode == 200) {
+        showNotification(context, "Contraseña restablecida.",
+            "Su contraseña ha sido restablecida exitosamente.", "Aceptar.");
+      }
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
   }
 
   Widget build(BuildContext context) {
+    String emailAddress = ModalRoute.of(context).settings.arguments as String;
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
 
@@ -63,6 +85,7 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
                           Text(
                             "Recuperar contraseña",
                             style: Theme.of(context).textTheme.headline1,
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(
                             height: 30,
@@ -76,19 +99,73 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
                           ),
                           Form(
                             key: _form,
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                  labelText: "Código de verificación"),
-                              validator: (value) {
-                                var isValidData = new RegExp(
-                                        r"^([0-9]){8}$",
-                                        caseSensitive: false)
-                                    .hasMatch(value.trim());
-                                if (isValidData) {
-                                  return null;
-                                }
-                                return "Código de verificación invalido";
-                              },
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                      labelText: "Código de verificación"),
+                                  validator: (value) {
+                                    var isValidData = value.length == 8;
+                                    if (isValidData) {
+                                      return null;
+                                    }
+                                    return "Código de verificación invalido";
+                                  },
+                                  onSaved: (value) {
+                                    passwordRecoveryDTO = PasswordRecoveryDTO(
+                                        passwordRecoveryDTO.emailAddress,
+                                        value,
+                                        passwordRecoveryDTO.newPassword);
+                                  },
+                                ),
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                      labelText:
+                                          "Dirección de correo electrónico"),
+                                  initialValue: emailAddress,
+                                  enabled: false,
+                                  onSaved: (value) {
+                                    passwordRecoveryDTO = PasswordRecoveryDTO(
+                                        emailAddress,
+                                        passwordRecoveryDTO.recoveryCode,
+                                        passwordRecoveryDTO.newPassword);
+                                  },
+                                  validator: (value) {
+                                    var isValidData = new RegExp(
+                                            r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                            caseSensitive: false)
+                                        .hasMatch(value.trim());
+                                    if (isValidData) {
+                                      return null;
+                                    }
+                                    return "Código de verificación invalido";
+                                  },
+                                ),
+                                TextFormField(
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                      labelText: "Nueva contraseña"),
+                                  validator: (value) {
+                                    String password = value.trim();
+                                    if (password.length >= 8 &&
+                                        password.length <= 50) {
+                                      return null;
+                                    }
+                                    showNotification(
+                                        context,
+                                        "Contaseña insegura",
+                                        "Por favor ingrese una contraseña con al menos 8 caracteres",
+                                        "Aceptar");
+                                    return "Contraseña inválida";
+                                  },
+                                  onSaved: (value) {
+                                    passwordRecoveryDTO = PasswordRecoveryDTO(
+                                        passwordRecoveryDTO.emailAddress,
+                                        passwordRecoveryDTO.recoveryCode,
+                                        value);
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(

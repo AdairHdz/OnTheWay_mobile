@@ -156,6 +156,7 @@ class _RequestServiceState extends State<RequestService> {
                           if (value.isEmpty) {
                             return "Por favor, rellene el campo";
                           }
+                          return null;
                         },
                         decoration: InputDecoration(
                             labelText: "Nombre",
@@ -169,6 +170,7 @@ class _RequestServiceState extends State<RequestService> {
                           if (value.isEmpty) {
                             return "Por favor, rellene el campo";
                           }
+                          return null;
                         },
                         decoration: InputDecoration(
                             labelText: "Calle",
@@ -186,6 +188,7 @@ class _RequestServiceState extends State<RequestService> {
                                 if (value.isEmpty) {
                                   return "Por favor, rellene el campo";
                                 }
+                                return null;
                               },
                               decoration: InputDecoration(
                                   labelText: "No. Int.",
@@ -201,6 +204,7 @@ class _RequestServiceState extends State<RequestService> {
                                 if (value.isEmpty) {
                                   return "Por favor, rellene el campo";
                                 }
+                                return null;
                               },
                               decoration: InputDecoration(
                                   labelText: "No Ext.",
@@ -217,6 +221,7 @@ class _RequestServiceState extends State<RequestService> {
                           if (value.isEmpty) {
                             return "Por favor, rellene el campo";
                           }
+                          return null;
                         },
                         decoration: InputDecoration(
                             labelText: "Municipio",

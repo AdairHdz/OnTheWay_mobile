@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
-import './statistics_screen.dart';
-
-import 'home_screen.dart';
-import 'services_screen.dart';
+import 'package:on_the_way_mobile/screens/home_screen.dart';
+import 'package:on_the_way_mobile/screens/services_screen.dart';
+import 'package:on_the_way_mobile/screens/statistics_screen.dart';
 
 import 'edit_profile_screen.dart';
 
@@ -34,7 +33,7 @@ class _TabsScreenState extends State<TabsScreen> {
       {
         "title": "Profile",
         "page": EditProfileScreen(),
-      }
+      },
     ];
     super.initState();
   }

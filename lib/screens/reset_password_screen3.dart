@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "../widgets/accent_button.dart";
-import "./login_screen.dart";
+import 'package:on_the_way_mobile/screens/login_screen.dart';
+import 'package:on_the_way_mobile/widgets/accent_button.dart';
 
 class ResetPasswordScreen3 extends StatefulWidget {
   static final String routeName = "/reset-password3";
