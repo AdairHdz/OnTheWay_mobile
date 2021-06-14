@@ -6,7 +6,7 @@ import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/notifier.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
-import "../widgets/price_rate_item.dart";
+import 'package:on_the_way_mobile/widgets/price_rate_item.dart';
 
 class PriceRate extends StatefulWidget {
   final List<PriceRateResponseDTO> priceRates;

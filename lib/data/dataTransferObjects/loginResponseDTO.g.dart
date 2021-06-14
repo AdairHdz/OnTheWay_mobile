@@ -16,12 +16,14 @@ LoginResponseDTO _$LoginResponseDTOFromJson(Map<String, dynamic> json) {
     json['verified'] as bool,
     json['stateId'] as String,
     json['token'] as String,
+    json['userId'] as String,
   );
 }
 
 Map<String, dynamic> _$LoginResponseDTOToJson(LoginResponseDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'names': instance.names,
       'lastName': instance.lastName,
       'emailAddress': instance.emailAddress,

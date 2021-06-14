@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import 'package:drawer_swipe/drawer_swipe.dart';
 
 class MainDrawer extends StatelessWidget {
   Widget buildListTile(String title, IconData icon, Function tapHandler) {

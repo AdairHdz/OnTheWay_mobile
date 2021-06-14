@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:on_the_way_mobile/models/service.dart';
+import 'package:on_the_way_mobile/screens/accept_cancel_service.dart';
+import 'package:on_the_way_mobile/screens/activation_account_screen.dart';
+import 'package:on_the_way_mobile/screens/edit_profile_screen.dart';
 import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
+import 'package:on_the_way_mobile/screens/initial_screen.dart';
+import 'package:on_the_way_mobile/screens/login_screen.dart';
+import 'package:on_the_way_mobile/screens/price_rate_registration_screen.dart';
+import 'package:on_the_way_mobile/screens/register_screen.dart';
 import 'package:on_the_way_mobile/screens/request_service.dart';
+import 'package:on_the_way_mobile/screens/reset_password_screen.dart';
+import 'package:on_the_way_mobile/screens/reset_password_screen2.dart';
+import 'package:on_the_way_mobile/screens/reset_password_screen3.dart';
+import 'package:on_the_way_mobile/screens/services_screen.dart';
+import 'package:on_the_way_mobile/screens/statistics_screen.dart';
 import 'package:on_the_way_mobile/screens/tabs_screen.dart';
-import "./screens/services_screen.dart";
-import 'screens/initial_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/price_rate_registration_screen.dart';
-import 'screens/register_screen.dart';
-import 'screens/accept_cancel_service.dart';
-import 'screens/statistics_screen.dart';
-import 'screens/edit_profile_screen.dart';
-import 'screens/reset_password_screen.dart';
-import 'screens/reset_password_screen2.dart';
-import 'screens/reset_password_screen3.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
         "/reset-password": (ctx) => ResetPasswordScreen(),
         "/reset-password2": (ctx) => ResetPasswordScreen2(),
         "/reset-password3": (ctx) => ResetPasswordScreen3(),
+        "/activation-account": (ctx) => ActivationAccountScreen(),
       },
     );
   }

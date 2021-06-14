@@ -1,93 +1,11 @@
 import 'package:flutter/material.dart';
-import "../models/Service.dart";
-import "./service_item.dart";
+import 'package:on_the_way_mobile/data/dataTransferObjects/serviceRequestDTO/serviceRequestDTO.dart';
+import 'package:on_the_way_mobile/widgets/service_item.dart';
 
 class ServicesList extends StatelessWidget {
   final int selectedService = 0;
-  final List<Service> services = [
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description:
-          "2 cajas de Ibuprofeno, 2 cajas de omeprazon y un cornetto porfa.",
-      kindOfService: KindOfService.Delivery,
-      serviceStatus: ServiceStatus.Active,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.DrugsPurchase,
-      serviceStatus: ServiceStatus.Canceled,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.DrugsPurchase,
-      serviceStatus: ServiceStatus.Active,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.GroceriesPurchase,
-      serviceStatus: ServiceStatus.Canceled,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.GroceriesPurchase,
-      serviceStatus: ServiceStatus.Concretized,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "Mota",
-      kindOfService: KindOfService.Delivery,
-      serviceStatus: ServiceStatus.Concretized,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.Delivery,
-      serviceStatus: ServiceStatus.Concretized,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.Otro,
-      serviceStatus: ServiceStatus.Concretized,
-    ),
-    Service(
-      accepted: true,
-      cost: 80.00,
-      date: DateTime.now(),
-      deliveryAddress: "Pedro Moreno #21",
-      description: "2 cajas de Ibuprofeno",
-      kindOfService: KindOfService.Otro,
-      serviceStatus: ServiceStatus.Canceled,
-    )
-  ];
+  final List<ServiceRequestDTO> serviceRequests;
+  ServicesList({this.serviceRequests});
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +17,9 @@ class ServicesList extends StatelessWidget {
             child: SizedBox(
               height: 500,
               child: ListView.builder(
-                itemCount: services.length,
+                itemCount: serviceRequests.length,
                 itemBuilder: (buildContext, index) {
-                  return ServiceItem(services[index]);
+                  return ServiceItem(serviceRequests[index]);
                 },
               ),
             ),

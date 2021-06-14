@@ -2,6 +2,7 @@ class Session {
   static final Session _session = Session._initializerFunction();
 
   String id;
+  String userId;
   String names;
   String lastName;
   String emailAddress;
@@ -9,6 +10,7 @@ class Session {
   bool verified;
   String stateId;
   String token;
+  String profilePicture;
 
   factory Session() {
     return _session;

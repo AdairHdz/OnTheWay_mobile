@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
-import "../widgets/accent_button.dart";
-import "./reset_password_screen2.dart";
+import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/screens/reset_password_screen2.dart';
+import 'package:on_the_way_mobile/widgets/accent_button.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   static final String routeName = "/reset-password";
@@ -10,19 +12,32 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _form = GlobalKey<FormState>();
-
-  void _saveForm() {
+  String emailAddress = "";
+  Future<void> _saveForm() async {
     bool dataIsValid = _form.currentState.validate();
-    print(dataIsValid);
     if (dataIsValid) {
       _form.currentState.save();
+      sendEmail();
+      await showNotification(
+          context,
+          "Código enviado",
+          "Hemos enviado un código de recuperación a su correo electrónico.",
+          "Aceptar");
       _goToResetPassword2();
     }
   }
 
+  Future<void> sendEmail() async {
+    RestRequest restRequest = new RestRequest();
+    Map<String, String> emailAddressRequest = {"emailAddress": emailAddress};
+    await restRequest.putResource(
+        "/v1/users/recoveryCode", emailAddressRequest, true);
+  }
+
   void _goToResetPassword2() {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(ResetPasswordScreen2.routeName);
+    // Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context)
+        .pushNamed(ResetPasswordScreen2.routeName, arguments: emailAddress);
   }
 
   Widget build(BuildContext context) {
@@ -35,7 +50,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          //color: Theme.of(context).primaryColor,
           color: Colors.white,
           height: (deviceHeight + 50),
           child: Stack(
@@ -60,9 +74,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           SizedBox(
                             height: 50,
                           ),
-                          Text(
-                            "Recuperar contraseña",
-                            style: Theme.of(context).textTheme.headline1,
+                          Align(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: deviceWidth,
+                              child: Text(
+                                "Recuperar contraseña",
+                                style: Theme.of(context).textTheme.headline1,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                           SizedBox(
                             height: 30,
@@ -77,8 +98,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           Form(
                             key: _form,
                             child: TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: "Correo electrónico"),
+                              decoration: InputDecoration(
+                                  labelText: "Correo electrónico"),
                               validator: (value) {
                                 var isValidData = new RegExp(
                                         r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
@@ -89,12 +110,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 }
                                 return "Dirección de correo inválida";
                               },
+                              onSaved: (value) {
+                                emailAddress = value;
+                              },
                             ),
                           ),
                           SizedBox(
                             height: 50,
                           ),
-                          AccentButton(() => _saveForm(), "Recuperar contraseña"),
+                          AccentButton(
+                              () => _saveForm(), "Recuperar contraseña"),
                         ],
                       ),
                     ),
@@ -106,6 +131,5 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       ),
     );
-    
   }
 }

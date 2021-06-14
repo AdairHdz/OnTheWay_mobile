@@ -11,6 +11,7 @@ class ServiceProviderDTO {
   String emailAddress;
   int averageScore;
   List<PriceRateResponseDTO> priceRates;
+  String profileImage;
 
   ServiceProviderDTO(
       {this.id,
@@ -18,7 +19,8 @@ class ServiceProviderDTO {
       this.lastName,
       this.emailAddress,
       this.averageScore,
-      this.priceRates});
+      this.priceRates,
+      this.profileImage});
 
   factory ServiceProviderDTO.fromJson(Map<String, dynamic> json) =>
       _$ServiceProviderDTOFromJson(json);

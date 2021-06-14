@@ -43,7 +43,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.9.0
   build_runner: ^1.0.0
   json_serializable: ^3.3.0
-  image_picker: ^0.7.4
+  # image_picker: ^0.7.4
 
 flutter_icons:
   android: true
@@ -67,6 +67,7 @@ flutter:
     - assets/images/logo-black.png
     - assets/images/canceled.png
     - assets/images/pending.png
+    - assets/images/OnTheWay.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
