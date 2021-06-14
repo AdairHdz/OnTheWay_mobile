@@ -37,13 +37,32 @@ class _ServicesScreenState extends State<ServicesScreen> {
           "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
           "Aceptar");
     } on NetworkRequestException catch (error) {
-      if (error.httpCode == 404) {
-        setState(() {
-          serviceRequestDTOList = List.empty(growable: true);
-        });
+      String exceptionMessage;
+      switch (error.httpCode) {
+        case 400:
+          exceptionMessage =
+              "Por favor asegúrese de haber introducido información válida e intente nuevamente.";
+          break;
+        case 401:
+          exceptionMessage = "Lo sentimos; su sesión ha expirado.";
+          break;
+        case 404:
+          setState(() {
+            serviceRequestDTOList = List.empty(growable: true);
+          });
+          exceptionMessage =
+              "No se encontraron solicitudes de servicio para la fecha indicada.";
+          break;
+        case 409:
+          exceptionMessage =
+              "Lo sentimos; ha ocurrido un error al intentar procesar su solicitud.";
+          break;
+        default:
+          exceptionMessage =
+              "Ha ocurrido un error desconocido. Por favor, intente m{as tarde.}.";
+          break;
       }
-      showNotification(
-          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+      showNotification(context, "Error", exceptionMessage, "Aceptar");
     }
   }
 

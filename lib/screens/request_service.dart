@@ -18,8 +18,6 @@ class _RequestServiceState extends State<RequestService> {
         _form.currentState.save();
         _showMyDialogReady();
       }
-    } else {
-      print("XD");
     }
   }
 

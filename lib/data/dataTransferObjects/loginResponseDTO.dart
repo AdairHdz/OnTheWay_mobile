@@ -13,9 +13,19 @@ class LoginResponseDTO {
   final bool verified;
   final String stateId;
   final String token;
+  final String refreshToken;
 
-  LoginResponseDTO(this.id, this.names, this.lastName, this.emailAddress,
-      this.userType, this.verified, this.stateId, this.token, this.userId);
+  LoginResponseDTO(
+      this.id,
+      this.names,
+      this.lastName,
+      this.emailAddress,
+      this.userType,
+      this.verified,
+      this.stateId,
+      this.token,
+      this.userId,
+      this.refreshToken);
 
   factory LoginResponseDTO.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseDTOFromJson(json);

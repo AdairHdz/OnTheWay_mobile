@@ -63,8 +63,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
           "Aceptar");
     } on NetworkRequestException catch (error) {
-      showNotification(
-          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+      String exceptionMessage;
+      switch (error.httpCode) {
+        case 404:
+          exceptionMessage = "No se encontró al Estado solicitado.";
+          break;
+        case 409:
+          exceptionMessage =
+              "Lo sentimos; ha ocurrido un error al intentar procesar su solicitud.";
+          break;
+        default:
+          exceptionMessage =
+              "Ha ocurrido un error desconocido. Por favor, intente m{as tarde.}.";
+          break;
+      }
+      showNotification(context, "Error", exceptionMessage, "Aceptar");
     }
   }
 
@@ -84,8 +97,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
           "Aceptar");
     } on NetworkRequestException catch (error) {
-      showNotification(
-          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+      String exceptionMessage;
+      switch (error.httpCode) {
+        case 400:
+          exceptionMessage =
+              "Por favor asegúrese de haber introducido información válida e intente nuevamente.";
+          break;
+        case 409:
+          exceptionMessage =
+              "Lo sentimos; ha ocurrido un error al intentar procesar su solicitud.";
+          break;
+        default:
+          exceptionMessage =
+              "Ha ocurrido un error desconocido. Por favor, intente m{as tarde.}.";
+          break;
+      }
+      showNotification(context, "Error", exceptionMessage, "Aceptar");
     }
   }
 
