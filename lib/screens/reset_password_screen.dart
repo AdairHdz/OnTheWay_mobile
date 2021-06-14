@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
+import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/notifier.dart';
 import 'package:on_the_way_mobile/screens/reset_password_screen2.dart';
 import 'package:on_the_way_mobile/widgets/accent_button.dart';
@@ -18,11 +19,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (dataIsValid) {
       _form.currentState.save();
       sendEmail();
-      await showNotification(
-          context,
-          "Código enviado",
-          "Hemos enviado un código de recuperación a su correo electrónico.",
-          "Aceptar");
       _goToResetPassword2();
     }
   }
@@ -30,12 +26,35 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Future<void> sendEmail() async {
     RestRequest restRequest = new RestRequest();
     Map<String, String> emailAddressRequest = {"emailAddress": emailAddress};
-    await restRequest.putResource(
-        "/v1/users/recoveryCode", emailAddressRequest, true);
+    try {
+      await restRequest.putResource(
+          "/v1/users/recoveryCode", emailAddressRequest, true);
+      await showNotification(
+          context,
+          "Código enviado",
+          "Hemos enviado un código de recuperación a su correo electrónico.",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      String exceptionMessage;
+      switch (error.httpCode) {
+        case 400:
+          exceptionMessage =
+              "Por favor asegúrese de haber introducido información válida e intente nuevamente.";
+          break;
+        case 409:
+          exceptionMessage =
+              "Lo sentimos; ha ocurrido un error al intentar procesar su solicitud.";
+          break;
+        default:
+          exceptionMessage =
+              "Ha ocurrido un error desconocido. Por favor, intente m{as tarde.}.";
+          break;
+      }
+      showNotification(context, "Error", exceptionMessage, "Aceptar");
+    }
   }
 
   void _goToResetPassword2() {
-    // Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.of(context)
         .pushNamed(ResetPasswordScreen2.routeName, arguments: emailAddress);
   }

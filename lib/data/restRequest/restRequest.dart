@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:on_the_way_mobile/data/restRequest/requestable.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
@@ -9,7 +10,6 @@ import 'dart:async';
 import 'package:path/path.dart';
 
 class RestRequest implements Requestable {
-  //static final String baseURL = "192.168.100.41:8080";
   static final String baseURL = "192.168.100.173:8080";
   @override
   Future<http.Response> getResource(String endpoint, bool includeToken,
@@ -22,6 +22,7 @@ class RestRequest implements Requestable {
     };
 
     if (includeToken) {
+      _refreshToken();
       if (requestHeaders == null) {
         defaultRequestHeaders["Authorization"] = "Bearer ${mySession.token}";
       } else {
@@ -68,61 +69,46 @@ class RestRequest implements Requestable {
     return response;
   }
 
-  @override
-  Future<http.Response> postResource(
-      String endpoint, Object payload, bool includeToken,
-      [Map<String, String> requestHeaders]) async {
+  void _refreshToken() {
+    DateTime expiryDate = Jwt.getExpiryDate(Session().token);
+    Duration timeDifference = expiryDate.difference(DateTime.now());
+    if (timeDifference.inMinutes <= 1) {
+      _requestNewToken();
+    }
+  }
+
+  Future<void> logout() async {
     Session mySession = Session();
     Map<String, String> defaultRequestHeaders = {
       "Content-Type": "application/json; charset=UTF-8",
       "Accept": "application/json",
+      "Token-Request": "${mySession.refreshToken}",
+      "Authorization": "${mySession.token}"
     };
 
-    if (includeToken) {
-      if (requestHeaders == null) {
-        defaultRequestHeaders["Authorization"] = "Bearer ${mySession.token}";
-      } else {
-        requestHeaders["Authorization"] = "Bearer ${mySession.token}";
-      }
-    }
+    await http.post(
+      Uri.http(baseURL, "/v1/logout"),
+      headers: defaultRequestHeaders,
+    );
+  }
 
-    final response = await http
-        .post(
-      Uri.http(baseURL, endpoint),
-      headers: requestHeaders == null ? defaultRequestHeaders : requestHeaders,
-      body: jsonEncode(payload),
-    )
-        .timeout(
-      Duration(seconds: 3),
-      onTimeout: () {
-        throw TimeoutException(
-            "El servidor ha tardado demasiado en responder. Por favor, intente más tarde");
-      },
+  void _requestNewToken() async {
+    Session mySession = Session();
+    Map<String, String> defaultRequestHeaders = {
+      "Content-Type": "application/json; charset=UTF-8",
+      "Accept": "application/json",
+      "Token-Request": "${Session().refreshToken}"
+    };
+
+    final response = await http.post(
+      Uri.http(baseURL, "/v1/refresh"),
+      headers: defaultRequestHeaders,
     );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      String errorMessage;
-      switch (response.statusCode) {
-        case 400:
-          errorMessage = "La información enviada no tiene un formato válido.";
-          break;
-        case 409:
-          errorMessage =
-              "Ha ocurrido un error mientras intentábamos registrar su cuenta. Por favor, intente más tarde";
-          break;
-        case 500:
-          errorMessage =
-              "Ha ocurrido un error mientras se procesaba su solicitud. Por favor, intente más tarde.";
-          break;
-        default:
-          print(response.statusCode);
-          errorMessage =
-              "Ha ocurrido un error desconocido. Por favor, intente más tarde";
-          break;
-      }
-      throw NetworkRequestException(errorMessage, response.statusCode);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      mySession.token = responseBody["token"];
     }
-    return response;
   }
 
   Future<http.Response> deleteResource(String endpoint, bool includeToken,
@@ -178,11 +164,69 @@ class RestRequest implements Requestable {
   }
 
   @override
+  Future<http.Response> postResource(
+      String endpoint, Object payload, bool includeToken,
+      [Map<String, String> requestHeaders]) async {
+    Session mySession = Session();
+    Map<String, String> defaultRequestHeaders = {
+      "Content-Type": "application/json; charset=UTF-8",
+      "Accept": "application/json",
+    };
+
+    if (includeToken) {
+      _refreshToken();
+      if (requestHeaders == null) {
+        defaultRequestHeaders["Authorization"] = "Bearer ${mySession.token}";
+      } else {
+        requestHeaders["Authorization"] = "Bearer ${mySession.token}";
+      }
+    }
+
+    final response = await http
+        .post(
+      Uri.http(baseURL, endpoint),
+      headers: requestHeaders == null ? defaultRequestHeaders : requestHeaders,
+      body: jsonEncode(payload),
+    )
+        .timeout(
+      Duration(seconds: 3),
+      onTimeout: () {
+        throw TimeoutException(
+            "El servidor ha tardado demasiado en responder. Por favor, intente más tarde");
+      },
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      String errorMessage;
+      switch (response.statusCode) {
+        case 400:
+          errorMessage = "La información enviada no tiene un formato válido.";
+          break;
+        case 409:
+          errorMessage =
+              "Ha ocurrido un error mientras intentábamos registrar su cuenta. Por favor, intente más tarde";
+          break;
+        case 500:
+          errorMessage =
+              "Ha ocurrido un error mientras se procesaba su solicitud. Por favor, intente más tarde.";
+          break;
+        default:
+          print(response.statusCode);
+          errorMessage =
+              "Ha ocurrido un error desconocido. Por favor, intente más tarde";
+          break;
+      }
+      throw NetworkRequestException(errorMessage, response.statusCode);
+    }
+    return response;
+  }
+
+  @override
   Future<http.StreamedResponse> putImageResource(
       String endpoint, String filePath) async {
     Session mySession = Session();
     File imageFile = File(filePath);
-
+    _refreshToken();
     Map<String, String> requestHeaders = {
       "Authorization": "Bearer ${mySession.token}"
     };
@@ -269,6 +313,7 @@ class RestRequest implements Requestable {
     };
 
     if (includeToken) {
+      _refreshToken();
       if (requestHeaders == null) {
         defaultRequestHeaders["Authorization"] = "Bearer ${mySession.token}";
       } else {
