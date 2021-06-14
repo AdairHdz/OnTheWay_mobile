@@ -52,7 +52,7 @@ class PriceRateItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
+                  Wrap(
                     children: [for (var item in weekdays) WeekdayCircle(item)],
                   ),
                   Text(
