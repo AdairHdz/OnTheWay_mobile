@@ -1,13 +1,19 @@
 import "package:flutter/foundation.dart";
 
 enum KindOfService {
-  GroceriesPurchase,
+  ServicePayment,
   DrugsPurchase,
+  GroceriesPurchase,
   Delivery,
-  Otro,
+  Other,
 }
 
-enum ServiceStatus { Concretized, Canceled, Active, Pending }
+enum ServiceStatus {
+  Pending,
+  Active,
+  Concretized,
+  Canceled,
+}
 
 class Service {
   final bool accepted;

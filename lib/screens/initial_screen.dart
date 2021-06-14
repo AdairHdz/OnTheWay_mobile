@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
-import '../widgets/rounded_button.dart';
-import 'login_screen.dart';
-import 'register_screen.dart';
+import 'package:on_the_way_mobile/screens/login_screen.dart';
+import 'package:on_the_way_mobile/screens/register_screen.dart';
+import 'package:on_the_way_mobile/widgets/rounded_button.dart';
 
 class InitialScreen extends StatelessWidget {
   static final String routeName = "/initial";

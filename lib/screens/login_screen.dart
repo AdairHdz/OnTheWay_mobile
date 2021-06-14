@@ -2,17 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import "package:flutter/material.dart";
-import 'package:on_the_way_mobile/screens/home_screen_sr.dart';
+import 'package:on_the_way_mobile/helpers/notifier.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/loginRequestDTO.dart';
 import 'package:on_the_way_mobile/data/dataTransferObjects/loginResponseDTO.dart';
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
-import 'package:on_the_way_mobile/models/user_types.dart';
-import 'package:on_the_way_mobile/widgets/notificationPopup.dart';
-import "../widgets/accent_button.dart";
-import "./home_screen.dart";
-import "./reset_password_screen.dart";
+import 'package:on_the_way_mobile/screens/activation_account_screen.dart';
+import 'package:on_the_way_mobile/screens/reset_password_screen.dart';
+import 'package:on_the_way_mobile/widgets/accent_button.dart';
 
 class LoginScreen extends StatefulWidget {
   static final String routeName = "/login";
@@ -33,23 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _showNotification(BuildContext context, String popupTitle,
-      String popupBody, String popupButtonText) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext _) {
-        return NotificationPopup(
-          title: popupTitle,
-          body: popupBody,
-          buttonText: popupButtonText,
-        );
-      },
-    );
-  }
-
   void navigateToHomeScreen(BuildContext context) {
     Navigator.of(context).pushNamed("/home");
+  }
+
+  void navigateToActivationAccountScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(ActivationAccountScreen.routeName);
   }
 
   Future<void> _loginUser() async {
@@ -63,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
             LoginResponseDTO.fromJson(loginResponseMap);
         Session mySession = Session();
         mySession.id = loginResponse.id;
+        mySession.userId = loginResponse.userId;
         mySession.names = loginResponse.names;
         mySession.lastName = loginResponse.lastName;
         mySession.emailAddress = loginResponse.emailAddress;
@@ -71,33 +59,27 @@ class _LoginScreenState extends State<LoginScreen> {
         mySession.token = loginResponse.token;
         mySession.stateId = loginResponse.stateId;
 
-        if (loginResponse.userType == UserType.ServiceProviderType) {
+        if (loginResponse.verified) {
           navigateToHomeScreen(context);
         } else {
-          print("Solicitante de servicios");
-          //Navegar a ventana principal de solicitante de servicios
+          navigateToActivationAccountScreen(context);
         }
       }
     } on TimeoutException catch (_) {
-      _showNotification(
+      showNotification(
           context,
           "Se ha agotado el tiempo de espera",
           "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
           "Aceptar");
     } on NetworkRequestException catch (error) {
-      _showNotification(
+      showNotification(
           context, "Ha ocurrido un error de red", error.cause, "Aceptar");
     }
   }
 
-  Future<void> _goToHomeScreen(BuildContext context) async {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(HomeScreenSr.routeName);
-  }
-
   void _goToResetPassword() {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.of(context).pushReplacementNamed(ResetPasswordScreen.routeName);
+    // Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushNamed(ResetPasswordScreen.routeName);
   }
 
   @override

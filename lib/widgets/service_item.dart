@@ -1,18 +1,20 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-//import 'package:on_the_way_mobile/models/service.dart';
-import '../models/Service.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/serviceRequestDTO/serviceRequestDTO.dart';
+import 'package:on_the_way_mobile/models/service.dart';
 import 'package:intl/intl.dart';
 
 class ServiceItem extends StatelessWidget {
-  final Service service;
+  final ServiceRequestDTO service;
 
   ServiceItem(this.service);
 
   String get _kindOfService {
-    KindOfService kindOfService = service.kindOfService;
+    KindOfService kindOfService = KindOfService.values[service.kindOfService];
     String kindOfServiceText;
     switch (kindOfService) {
+      case KindOfService.ServicePayment:
+        kindOfServiceText = "Pago de servicios";
+        break;
       case KindOfService.Delivery:
         kindOfServiceText = "Entrega";
         break;
@@ -29,7 +31,7 @@ class ServiceItem extends StatelessWidget {
   }
 
   String get _serviceStatus {
-    ServiceStatus serviceStatus = service.serviceStatus;
+    ServiceStatus serviceStatus = ServiceStatus.values[service.status];
     String serviceStatusText;
     switch (serviceStatus) {
       case ServiceStatus.Active:
@@ -41,9 +43,9 @@ class ServiceItem extends StatelessWidget {
       case ServiceStatus.Canceled:
         serviceStatusText = "Cancelado";
         break;
-      // case ServiceStatus.
-      //   serviceStatusText = "Pendiente";
-      //   break;
+      case ServiceStatus.Pending:
+        serviceStatusText = "Pendiente de aceptación";
+        break;
       default:
         serviceStatusText = "Indefinido";
     }
@@ -51,7 +53,7 @@ class ServiceItem extends StatelessWidget {
   }
 
   String get _serviceImage {
-    ServiceStatus serviceStatus = service.serviceStatus;
+    ServiceStatus serviceStatus = ServiceStatus.values[service.status];
     String serviceImage;
     switch (serviceStatus) {
       case ServiceStatus.Active:
@@ -74,15 +76,8 @@ class ServiceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/accept_cancel_service", arguments: {
-          'accepted': service.accepted,
-          'cost': service.cost,
-          'date': service.date,
-          'deliveryAddress': service.deliveryAddress,
-          'description': service.description,
-          'kindOfService': _kindOfService,
-          'serviceStatus': _serviceStatus
-        });
+        Navigator.of(context)
+            .pushNamed("/accept_cancel_service", arguments: service);
       },
       child: Card(
         color: Theme.of(context).primaryColor,
@@ -102,7 +97,7 @@ class ServiceItem extends StatelessWidget {
                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           ),
           subtitle: Text(
-            DateFormat.yMd().add_jm().format(DateTime.now()),
+            DateFormat.yMd().add_jm().format(DateTime.parse(service.date)),
             style: TextStyle(
               color: Colors.white,
               fontSize: 12,

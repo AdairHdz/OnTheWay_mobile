@@ -1,16 +1,12 @@
-import 'dart:io';
-
 import "package:flutter/material.dart";
 import 'package:on_the_way_mobile/helpers/sessionManager/Session.dart';
-
-import './stars_rating.dart';
+import 'package:on_the_way_mobile/widgets/stars_rating.dart';
 
 class ProfileInfo extends StatefulWidget {
   final String serviceProviderName;
   final int averageScore;
   final String profileImage;
   ProfileInfo({this.serviceProviderName, this.averageScore, this.profileImage});
-  Session session = Session();
 
   @override
   _ProfileInfoState createState() => _ProfileInfoState();
@@ -18,11 +14,15 @@ class ProfileInfo extends StatefulWidget {
 
 class _ProfileInfoState extends State<ProfileInfo> {
   Image noImage = Image.asset("assets/images/OnTheWay.png");
-  String imageUrl = "";
+  Session session = Session();
+  String imageUrl;
   @override
   void initState() {
     super.initState();
-    imageUrl = widget.profileImage;
+    imageUrl =
+        "http://192.168.100.173:8080/images/${session.id}/${widget.profileImage}";
+    session.profilePicture =
+        "http://192.168.100.173:8080/images/${session.id}/${widget.profileImage}";
   }
 
   @override
@@ -38,7 +38,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
               child: (imageUrl !=
                       null) // Only use the network image if the url is not null
                   ? Image.network(
-                      imageUrl,
+                      "http://192.168.100.173:8080/images/${session.id}/${widget.profileImage}",
                       loadingBuilder: (context, child, loadingProgress) =>
                           (loadingProgress == null)
                               ? child

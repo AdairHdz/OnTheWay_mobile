@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
+import 'package:on_the_way_mobile/data/dataTransferObjects/serviceProviderEditionDTO/serviceProviderEditionDTO.dart';
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/notifier.dart';
@@ -18,19 +18,16 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _form = GlobalKey<FormState>();
-
+  ServiceProviderEditionDTO serviceProviderEditionDTO =
+      ServiceProviderEditionDTO(names: "", lastName: "");
   void _saveForm() {
     bool dataIsValid = _form.currentState.validate();
     if (dataIsValid) {
       _form.currentState.save();
-      _showMyDialog(context, "Cambios guardados con exito");
+      _updateProfile();
     } else {
       _showMyDialog(context, "“Los campos de texto son inválidos");
     }
-  }
-
-  void _saveChanges() {
-    _saveForm();
   }
 
   Future<void> _showMyDialog(BuildContext context, String message) async {
@@ -60,8 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Image noImage = Image.asset("assets/images/OnTheWay.png");
-
-  String imageUrl = "";
+  Session session = Session();
   String imagePath = "";
 
   Future<void> _getImage() async {
@@ -78,14 +74,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  Future<void> _sendImage() async {
+  Future<void> _updateProfile() async {
     RestRequest request = RestRequest();
     try {
-      var response = await request.putImageResource(
-          "/v1/providers/${Session().id}/image", imagePath);
+      Session session = Session();
+      var response = await request.patchResource(
+          "/v1/providers/${session.id}", serviceProviderEditionDTO, true);
       if (response.statusCode == 200) {
-        Map<String, dynamic> loginResponseMap = jsonDecode(response.body);
-        print(loginResponseMap);
+        showNotification(context, "Información actualizada",
+            "Sus datos se han actualizado correctamente.", "Aceptar");
       }
     } on TimeoutException catch (_) {
       showNotification(
@@ -99,12 +96,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _sendImage() async {
+    RestRequest request = RestRequest();
+    try {
+      await request.putImageResource(
+          "/v1/providers/${Session().id}/image", imagePath);
+    } on TimeoutException catch (_) {
+      showNotification(
+          context,
+          "Se ha agotado el tiempo de espera",
+          "El servidor ha tardado demasiado en responder. Por favor, intente más tarde",
+          "Aceptar");
+    } on NetworkRequestException catch (error) {
+      showNotification(
+          context, "Ha ocurrido un error de red", error.cause, "Aceptar");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    imagePath =
+        "http://192.168.100.173:8080/images/${session.id}/${session.profilePicture}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
-    var listStates = ['Veracruz', 'Oaxaca', 'Puebla'];
-    String _view = 'Estado';
 
     return Scaffold(
         appBar: AppBar(
@@ -119,10 +138,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     width: deviceWidth,
                     height: (deviceHeight * 0.30),
                     child: FittedBox(
-                      child: (imageUrl !=
+                      child: (imagePath !=
                               null) // Only use the network image if the url is not null
                           ? Image.network(
-                              imageUrl,
+                              imagePath,
                               loadingBuilder:
                                   (context, child, loadingProgress) =>
                                       (loadingProgress == null)
@@ -160,16 +179,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: [
                         TextFormField(
                           decoration: InputDecoration(labelText: "Nombres"),
+                          initialValue: Session().names,
                           validator: (value) {
                             var isValidData = new RegExp(r"[A-z ]{1,50}",
                                     caseSensitive: false)
                                 .hasMatch(value.trim());
                             if (isValidData) {
-                              print("Valida");
                               return null;
                             }
-                            print("Invalida");
                             return "Por favor inserte solo letras y espacios en blanco";
+                          },
+                          onSaved: (value) {
+                            serviceProviderEditionDTO =
+                                ServiceProviderEditionDTO(
+                                    names: value,
+                                    lastName:
+                                        serviceProviderEditionDTO.lastName);
                           },
                         ),
                         SizedBox(
@@ -177,6 +202,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(labelText: "Apellidos"),
+                          initialValue: Session().lastName,
                           validator: (value) {
                             var isValidData = new RegExp(r"[A-z ]{1,50}",
                                     caseSensitive: false)
@@ -185,6 +211,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               return null;
                             }
                             return "Por favor inserte solo letras y espacios en blanco";
+                          },
+                          onChanged: (value) {
+                            serviceProviderEditionDTO =
+                                ServiceProviderEditionDTO(
+                                    names: serviceProviderEditionDTO.names,
+                                    lastName: value);
                           },
                         ),
                         SizedBox(
@@ -196,7 +228,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         SizedBox(
                           height: 50,
                         ),
-                        AccentButton(_saveChanges, "Aceptar"),
+                        AccentButton(_saveForm, "Aceptar"),
                       ],
                     ),
                   ),

@@ -6,8 +6,8 @@ import 'package:on_the_way_mobile/data/dataTransferObjects/stateDTO/stateDTO.dar
 import 'package:on_the_way_mobile/data/restRequest/restRequest.dart';
 import 'package:on_the_way_mobile/helpers/customExceptions/networkRequestException.dart';
 import 'package:on_the_way_mobile/helpers/notifier.dart';
+import 'package:on_the_way_mobile/widgets/accent_button.dart';
 import 'package:on_the_way_mobile/widgets/custom_dropdown_button.dart';
-import "../widgets/accent_button.dart";
 
 class RegisterScreen extends StatefulWidget {
   static final String routeName = "/register";
