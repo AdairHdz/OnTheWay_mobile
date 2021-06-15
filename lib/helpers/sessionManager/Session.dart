@@ -10,6 +10,7 @@ class Session {
   bool verified;
   String stateId;
   String token;
+  String refreshToken;
   String profilePicture;
 
   factory Session() {

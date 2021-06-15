@@ -17,6 +17,7 @@ LoginResponseDTO _$LoginResponseDTOFromJson(Map<String, dynamic> json) {
     json['stateId'] as String,
     json['token'] as String,
     json['userId'] as String,
+    json['refreshToken'] as String,
   );
 }
 
@@ -31,4 +32,5 @@ Map<String, dynamic> _$LoginResponseDTOToJson(LoginResponseDTO instance) =>
       'verified': instance.verified,
       'stateId': instance.stateId,
       'token': instance.token,
+      'refreshToken': instance.refreshToken,
     };
