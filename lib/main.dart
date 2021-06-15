@@ -14,6 +14,7 @@ import 'package:on_the_way_mobile/screens/reset_password_screen3.dart';
 import 'package:on_the_way_mobile/screens/services_screen.dart';
 import 'package:on_the_way_mobile/screens/statistics_screen.dart';
 import 'package:on_the_way_mobile/screens/tabs_screen.dart';
+import 'package:on_the_way_mobile/screens/video_player_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         "/reset-password2": (ctx) => ResetPasswordScreen2(),
         "/reset-password3": (ctx) => ResetPasswordScreen3(),
         "/activation-account": (ctx) => ActivationAccountScreen(),
+        "/video-player": (ctx) => VideoPlayerScreen(),
       },
     );
   }

@@ -19,7 +19,10 @@ class _EvidenceListState extends State<EvidenceList> {
       children: [
         if (widget.evidence != null)
           for (int i = 0; i < widget.evidence.length; i++)
-            EvidenceItem(widget.evidence[i].name),
+            EvidenceItem(
+              name: widget.evidence[i].name,
+              link: widget.evidence[i].link,
+            ),
       ],
     );
   }
