@@ -91,6 +91,34 @@ class _HomeScreenState extends State<HomeScreen> {
     _getReviews();
   }
 
+  void _navigateToNextPage() {
+    setState(() {
+      _currentPage++;
+      _getReviews();
+    });
+  }
+
+  void _navigateToPreviousPage() {
+    setState(() {
+      _currentPage--;
+      _getReviews();
+    });
+  }
+
+  void _navigateToFirstPage() {
+    setState(() {
+      _currentPage = 1;
+      _getReviews();
+    });
+  }
+
+  void _navigateToLastPage() {
+    setState(() {
+      _currentPage = _totalPages;
+      _getReviews();
+    });
+  }
+
   Future<void> _getReviews() async {
     RestRequest request = new RestRequest();
     Map<String, String> queryParameters = {
@@ -104,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _reviewPaginationDTO = ReviewPaginationDTO.fromJson(responseBody);
         _currentPage = _reviewPaginationDTO.page;
-        _totalPages = _reviewPaginationDTO.pages;
+        _totalPages = (_reviewPaginationDTO.total / _pageSize).ceil();
         _totalRows = _reviewPaginationDTO.total;
       });
     } on NetworkRequestException catch (error) {
@@ -146,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           foregroundColor: Colors.white,
+          mini: true,
           onPressed: () => navigateToPriceRateRegistry(context),
         ),
         body: SingleChildScrollView(
@@ -194,13 +223,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             textAlign: TextAlign.left),
                       ),
                       ReviewsList(_reviewPaginationDTO.data),
-                      SizedBox(
-                        height: 10,
-                      ),
                       NavigationButtonBar(
                         currentPage: _currentPage,
                         totalPages: _totalPages,
                         totalRows: _totalRows,
+                        firstPageHandler:
+                            _currentPage <= 1 ? null : _navigateToFirstPage,
+                        previousPageHandler:
+                            _currentPage <= 1 ? null : _navigateToPreviousPage,
+                        nextPageHandler: _currentPage >= _totalPages
+                            ? null
+                            : _navigateToNextPage,
+                        lastPageHandler: _currentPage >= _totalPages
+                            ? null
+                            : _navigateToLastPage,
                       ),
                     ],
                   ),

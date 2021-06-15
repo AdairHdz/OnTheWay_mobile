@@ -4,7 +4,18 @@ class NavigationButtonBar extends StatefulWidget {
   final int currentPage;
   final int totalPages;
   final int totalRows;
-  NavigationButtonBar({this.currentPage, this.totalPages, this.totalRows});
+  final Function nextPageHandler;
+  final Function previousPageHandler;
+  final Function firstPageHandler;
+  final Function lastPageHandler;
+  NavigationButtonBar(
+      {this.currentPage,
+      this.totalPages,
+      this.totalRows,
+      this.nextPageHandler,
+      this.previousPageHandler,
+      this.firstPageHandler,
+      this.lastPageHandler});
 
   @override
   _NavigationButtonBarState createState() => _NavigationButtonBarState();
@@ -14,17 +25,17 @@ class _NavigationButtonBarState extends State<NavigationButtonBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: widget.firstPageHandler,
             icon: Icon(Icons.skip_previous_rounded),
             color: Theme.of(context).primaryColor,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: widget.previousPageHandler,
             icon: Icon(Icons.navigate_before),
             color: Theme.of(context).primaryColor,
           ),
@@ -39,12 +50,12 @@ class _NavigationButtonBarState extends State<NavigationButtonBar> {
                 ),
               )),
           IconButton(
-            onPressed: () {},
+            onPressed: widget.nextPageHandler,
             icon: Icon(Icons.navigate_next),
             color: Theme.of(context).primaryColor,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: widget.lastPageHandler,
             icon: Icon(Icons.skip_next_rounded),
             color: Theme.of(context).primaryColor,
           ),
