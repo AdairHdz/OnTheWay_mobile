@@ -62,22 +62,22 @@ class SimplePieChart extends StatelessWidget {
     String dataColor;
     switch (kindOfService) {
       case 0:
-        dataColor = "0xFFFA6464";
+        dataColor = "0xFFFFA500";
         break;
       case 1:
-        dataColor = "0xFF521BFA";
+        dataColor = "0xFF87ceeb";
         break;
       case 2:
         dataColor = "0xFF646464";
         break;
       case 3:
-        dataColor = "0xFF56E678";
+        dataColor = "0xFFff8d1e";
         break;
       case 4:
-        dataColor = "0xFF5C7DFA";
+        dataColor = "0xFF1e90ff";
         break;
       default:
-        dataColor = "0xFFFA6464";
+        dataColor = "0xFFff6b6c";
         break;
     }
     return dataColor;

@@ -166,29 +166,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Column(
               children: [
                 Container(
-                  width: deviceWidth * .85,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Servicios",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Completados: 25",
-                          ),
-                          Text(
-                            "Cancelados: 4",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
                   height: 300,
                   width: deviceWidth * .85,
                   child: Card(
