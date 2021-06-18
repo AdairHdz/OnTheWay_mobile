@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     RestRequest request = RestRequest();
     try {
       var response =
-          await request.getResource("/v1/providers/${Session().id}", true);
+          await request.getResource("/v1.0.0/providers/${Session().id}", true);
       Map<String, dynamic> serviceProviderMap = jsonDecode(response.body);
       setState(() {
         _serviceProviderDTO = ServiceProviderDTO.fromJson(serviceProviderMap);
@@ -127,7 +127,10 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     try {
       var response = await request.getResource(
-          "/v1/providers/${Session().id}/reviews", true, null, queryParameters);
+          "/v1.0.0/providers/${Session().id}/reviews",
+          true,
+          null,
+          queryParameters);
       Map<String, dynamic> responseBody = jsonDecode(response.body);
       setState(() {
         _reviewPaginationDTO = ReviewPaginationDTO.fromJson(responseBody);
@@ -141,9 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
         case 400:
           exceptionMessage =
               "Por favor asegúrese de haber introducido información válida e intente nuevamente.";
+          showNotification(context, "Error", exceptionMessage, "Aceptar");
           break;
         case 401:
           exceptionMessage = "Lo sentimos; su sesión ha expirado.";
+          showNotification(context, "Error", exceptionMessage, "Aceptar");
           break;
         case 404:
           exceptionMessage = "";
@@ -151,13 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
         case 409:
           exceptionMessage =
               "Lo sentimos; ha ocurrido un error al intentar procesar su solicitud.";
+          showNotification(context, "Error", exceptionMessage, "Aceptar");
           break;
         default:
           exceptionMessage =
               "Ha ocurrido un error desconocido. Por favor, intente m{as tarde.}.";
+          showNotification(context, "Error", exceptionMessage, "Aceptar");
           break;
       }
-      showNotification(context, "Error", exceptionMessage, "Aceptar");
     } on TimeoutException catch (_) {
       showNotification(
           context,

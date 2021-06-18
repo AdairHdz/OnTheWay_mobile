@@ -79,7 +79,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       Session session = Session();
       var response = await request.patchResource(
-          "/v1/providers/${session.id}", serviceProviderEditionDTO, true);
+          "/v1.0.0/providers/${session.id}", serviceProviderEditionDTO, true);
       if (response.statusCode == 200) {
         showNotification(context, "Información actualizada",
             "Sus datos se han actualizado correctamente.", "Aceptar");
@@ -117,7 +117,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     RestRequest request = RestRequest();
     try {
       await request.putImageResource(
-          "/v1/providers/${Session().id}/image", imagePath);
+          "/v1.0.0/providers/${Session().id}/image", imagePath);
     } on TimeoutException catch (_) {
       showNotification(
           context,

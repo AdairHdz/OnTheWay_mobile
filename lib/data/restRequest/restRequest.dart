@@ -87,7 +87,7 @@ class RestRequest implements Requestable {
     };
 
     await http.post(
-      Uri.http(baseURL, "/v1/logout"),
+      Uri.http(baseURL, "/v1.0.0/logout"),
       headers: defaultRequestHeaders,
     );
   }
@@ -101,7 +101,7 @@ class RestRequest implements Requestable {
     };
 
     final response = await http.post(
-      Uri.http(baseURL, "/v1/refresh"),
+      Uri.http(baseURL, "/v1.0.0/refresh"),
       headers: defaultRequestHeaders,
     );
 

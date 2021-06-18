@@ -28,7 +28,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     Map<String, String> emailAddressRequest = {"emailAddress": emailAddress};
     try {
       await restRequest.putResource(
-          "/v1/users/recoveryCode", emailAddressRequest, true);
+          "/v1.0.0/users/recoveryCode", emailAddressRequest, true);
       await showNotification(
           context,
           "Código enviado",

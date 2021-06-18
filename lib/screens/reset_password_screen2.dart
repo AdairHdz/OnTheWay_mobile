@@ -29,7 +29,7 @@ class _ResetPasswordScreenState2 extends State<ResetPasswordScreen2> {
     RestRequest request = RestRequest();
     try {
       var response = await request.patchResource(
-          "/v1/users/password", passwordRecoveryDTO, true);
+          "/v1.0.0/users/password", passwordRecoveryDTO, true);
       if (response.statusCode == 200) {
         showNotification(context, "Contraseña restablecida.",
             "Su contraseña ha sido restablecida exitosamente.", "Aceptar.");

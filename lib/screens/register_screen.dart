@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _fetchStates() async {
     RestRequest request = RestRequest();
     try {
-      var response = await request.getResource("/v1/states", false);
+      var response = await request.getResource("/v1.0.0/states", false);
       if (response.statusCode == 200) {
         List<StateDTO> listOfStatesDTO = (json.decode(response.body) as List)
             .map((i) => StateDTO.fromJson(i))
@@ -85,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     RestRequest request = RestRequest();
     try {
       var response = await request.postResource(
-          "/v1/register", _registerRequestDTO, false);
+          "/v1.0.0/register", _registerRequestDTO, false);
       if (response.statusCode == 201) {
         showNotification(context, "Usuario registrado",
             "El usuario se ha registrado correctamente", "Aceptar");
