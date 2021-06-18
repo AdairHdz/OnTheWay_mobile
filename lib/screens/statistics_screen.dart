@@ -37,7 +37,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         "endingDate": formattedEndingdDate
       };
       var response = await request.getResource(
-          "/v1/providers/${Session().id}/statistics", true, null, queryParams);
+          "/v1.0.0/providers/${Session().id}/statistics",
+          true,
+          null,
+          queryParams);
       Map<String, dynamic> statisticsMap = jsonDecode(response.body);
       setState(() {
         _statisticsDTO = StatisticsDTO.fromJson(statisticsMap);

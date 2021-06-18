@@ -24,7 +24,7 @@ class AcceptCancelService extends StatelessWidget {
         ServiceRequestStatusDTO serviceRequestStatusDTO =
             ServiceRequestStatusDTO(serviceStatus);
         var response = await request.patchResource(
-            "/v1/requests/${service.id}", serviceRequestStatusDTO, true);
+            "/v1.0.0/requests/${service.id}", serviceRequestStatusDTO, true);
         if (response.statusCode == 200) {
           String title;
           String message;
@@ -76,6 +76,10 @@ class AcceptCancelService extends StatelessWidget {
       addressOverview +=
           ", col. ${service.deliveryAddress.suburb}; ${service.deliveryAddress.city.name}";
       return addressOverview;
+    }
+
+    void _navigateToHomeScreen(BuildContext context) {
+      Navigator.of(context).pushNamed("/home");
     }
 
     String _kindOfService() {
@@ -250,11 +254,13 @@ class AcceptCancelService extends StatelessWidget {
                           visible: isVisibleForAccept,
                           child: AccentButton(() {
                             _changeServiceStatus(1);
+                            _navigateToHomeScreen(context);
                           }, "Aceptar")),
                       Visibility(
                           visible: isVisibleForCancel,
                           child: AccentButton(() {
                             _changeServiceStatus(3);
+                            _navigateToHomeScreen(context);
                           }, "Cancelar"))
                     ],
                   ),

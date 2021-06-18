@@ -24,7 +24,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
       String formattedDate = DateFormat('yyyy-MM-dd').format(_startingDate);
       Map<String, String> queryParams = {"date": formattedDate};
       var response = await request.getResource(
-          "/v1/providers/${Session().id}/requests", true, null, queryParams);
+          "/v1.0.0/providers/${Session().id}/requests",
+          true,
+          null,
+          queryParams);
       setState(() {
         serviceRequestDTOList = (json.decode(response.body) as List)
             .map((i) => ServiceRequestDTO.fromJson(i))

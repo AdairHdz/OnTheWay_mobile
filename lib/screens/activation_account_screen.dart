@@ -27,7 +27,7 @@ class _ActivationAccountScreenState extends State<ActivationAccountScreen> {
     RestRequest restRequest = new RestRequest();
     Map<String, String> emailAddressRequest = {"emailAddress": emailAddress};
     await restRequest.putResource(
-        "/v1/users/${Session().userId}/verify", emailAddressRequest, true);
+        "/v1.0.0/users/${Session().userId}/verify", emailAddressRequest, true);
     showNotification(
         context,
         "Código enviado",
@@ -48,7 +48,7 @@ class _ActivationAccountScreenState extends State<ActivationAccountScreen> {
           "verificationCode": verificationCode
         };
         var response = await request.patchResource(
-            "/v1/users/${Session().userId}/verify",
+            "/v1.0.0/users/${Session().userId}/verify",
             verificationCodeRequest,
             true);
         if (response.statusCode == 200) {

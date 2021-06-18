@@ -21,6 +21,10 @@ class PriceRateRegistrationScreen extends StatefulWidget {
       _PriceRateRegistrationScreenState();
 }
 
+void _navigateToHomeScreen(BuildContext context) {
+  Navigator.of(context).pushNamed("/home");
+}
+
 class _PriceRateRegistrationScreenState
     extends State<PriceRateRegistrationScreen> {
   final _form = GlobalKey<FormState>();
@@ -129,7 +133,7 @@ class _PriceRateRegistrationScreenState
     Session mySession = Session();
     try {
       var response = await request.postResource(
-          "/v1/providers/${mySession.id}/priceRates", _priceRateDTO, true);
+          "/v1.0.0/providers/${mySession.id}/priceRates", _priceRateDTO, true);
       if (response.statusCode == 201) {
         showNotification(context, "Tarifa registrada",
             "La tarifa se ha registrado de forma exitosa", "Aceptar");
@@ -168,7 +172,7 @@ class _PriceRateRegistrationScreenState
     Session mySession = Session();
     try {
       var response = await request.getResource(
-          "/v1/states/${mySession.stateId}/cities", false);
+          "/v1.0.0/states/${mySession.stateId}/cities", false);
       if (response.statusCode == 200) {
         List<CityDTO> listOfCitiesDTO = (jsonDecode(response.body) as List)
             .map((i) => CityDTO.fromJson(i))
@@ -449,7 +453,10 @@ class _PriceRateRegistrationScreenState
                             backgroundColor: MaterialStateProperty.all(
                                 Theme.of(context).accentColor),
                           ),
-                          onPressed: () => _saveForm()),
+                          onPressed: () {
+                            _saveForm();
+                            _navigateToHomeScreen(context);
+                          }),
                     )
                   ],
                 ),
