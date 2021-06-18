@@ -35,7 +35,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          //color: Theme.of(context).primaryColor,
           color: Colors.white,
           height: (deviceHeight + 50),
           child: Stack(
